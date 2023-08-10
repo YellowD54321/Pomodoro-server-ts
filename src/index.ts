@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import UserRouter from "./routes/userRoutes";
 import cors from "cors";
 import authorize from "./middlewares/auth";
+import DurationRouter from "./routes/durationRoutes";
 
 dotenv.config();
 
@@ -24,9 +25,7 @@ app.use("/user", UserRouter);
 
 app.use(authorize);
 
-app.get("/test", (req: Request, res: Response) => {
-  res.send("login successful");
-});
+app.use("/durations", DurationRouter);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

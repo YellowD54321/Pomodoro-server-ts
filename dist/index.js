@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const cors_1 = __importDefault(require("cors"));
 const auth_1 = __importDefault(require("./middlewares/auth"));
+const durationRoutes_1 = __importDefault(require("./routes/durationRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
@@ -21,9 +22,7 @@ app.get("/", (req, res) => {
 });
 app.use("/user", userRoutes_1.default);
 app.use(auth_1.default);
-app.get("/test", (req, res) => {
-    res.send("login successful");
-});
+app.use("/durations", durationRoutes_1.default);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
