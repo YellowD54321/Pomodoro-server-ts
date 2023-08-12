@@ -36,13 +36,21 @@ exports.postDuration = exports.getDurationById = void 0;
 const durationQueries_1 = require("../queries/durationQueries");
 const db = __importStar(require("./db"));
 const getDurationById = (durationId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield db.query(durationQueries_1.DurationQueries.GetDurationById, [
-        durationId,
-    ]);
+    const [duration] = yield db.query(durationQueries_1.DurationQueries.GetDurationById, [durationId]);
+    return duration;
 });
 exports.getDurationById = getDurationById;
-const postDuration = ({ start_time, end_time, interrupt_times, focus_seconds, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const { insertid } = yield db.query(durationQueries_1.DurationQueries.PostDuration, [start_time, end_time, interrupt_times, focus_seconds, type, description]);
-    return insertid;
+const postDuration = ({ user_id, start_time, end_time, interrupt_times, focus_seconds, pause_seconds, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const { insertId } = yield db.query(durationQueries_1.DurationQueries.PostDuration, [
+        user_id,
+        start_time,
+        end_time,
+        interrupt_times,
+        focus_seconds,
+        pause_seconds,
+        type,
+        description,
+    ]);
+    return insertId;
 });
 exports.postDuration = postDuration;

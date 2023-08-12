@@ -31,11 +31,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postDuration = exports.getDurationById = void 0;
 const DurationServices = __importStar(require("../services/durationServices"));
 const check_1 = require("../utils/check");
 const constants_1 = require("../constants");
+const dayjs_1 = __importDefault(require("dayjs"));
 const getDurationById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const duration = yield DurationServices.getDurationById(Number(req.params.id));
@@ -56,6 +60,7 @@ const postDuration = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const start_time = req.body.start_time;
     const end_time = req.body.end_time;
     const interrupt_times = req.body.interrupt_times || 0;
+    const pause_seconds = req.body.pause_seconds || 0;
     const durationType = req.body.type;
     const description = req.body.description || "";
     if (!start_time || !(0, check_1.isValidDate)(start_time)) {
@@ -66,40 +71,42 @@ const postDuration = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (!constants_1.durationTypes.includes(durationType)) {
         const types = constants_1.durationTypes.join(" | ");
         res.status(400).json({
-            message: `Invalid type. start_time must be ${types}`,
+            message: `Invalid type. type must be ${types}`,
         });
     }
     const focus_seconds = end_time
-        ? Math.floor((new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000)
+        ? Math.floor((new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000) - pause_seconds
         : 0;
     try {
-        let insertid = 0;
+        let insertId = 0;
         try {
-            insertid = yield DurationServices.postDuration({
+            insertId = yield DurationServices.postDuration({
                 user_id: user.id,
-                start_time,
-                end_time,
-                focus_seconds,
+                start_time: (0, dayjs_1.default)(start_time).format("YYYY-MM-DD HH:mm:ss"),
+                end_time: (0, dayjs_1.default)(end_time).format("YYYY-MM-DD HH:mm:ss"),
                 interrupt_times,
+                focus_seconds,
+                pause_seconds,
                 type: durationType,
                 description,
             });
         }
         catch (err) {
             console.error("[duration controller][DurationServices.postDuration][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+            console.log("user id type", typeof user.id);
             res.status(500).json({
                 message: "Post duration failed.",
             });
             return;
         }
-        const duration = yield DurationServices.getDurationById(insertid);
+        const duration = yield DurationServices.getDurationById(insertId);
         res.status(200).json({
             duration,
         });
         return;
     }
     catch (err) {
-        console.error("[duration controller][DurationServices.postDuration][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error("[duration controller][DurationServices.getDurationById][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
         res.status(500).json({
             message: "Post duration successful, but unable to get the posted data.",
         });

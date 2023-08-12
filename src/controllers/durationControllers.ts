@@ -3,6 +3,7 @@ import { Response } from "express";
 import * as DurationServices from "../services/durationServices";
 import { isValidDate } from "../utils/check";
 import { durationTypes } from "../constants";
+import dayjs from "dayjs";
 
 export const getDurationById = async (
   req: IGetDurationReq,
@@ -34,6 +35,7 @@ export const postDuration = async (
   const start_time = req.body.start_time;
   const end_time = req.body.end_time;
   const interrupt_times = req.body.interrupt_times || 0;
+  const pause_seconds = req.body.pause_seconds || 0;
   const durationType = req.body.type;
   const description = req.body.description || "";
 
@@ -46,25 +48,26 @@ export const postDuration = async (
   if (!durationTypes.includes(durationType)) {
     const types = durationTypes.join(" | ");
     res.status(400).json({
-      message: `Invalid type. start_time must be ${types}`,
+      message: `Invalid type. type must be ${types}`,
     });
   }
 
   const focus_seconds = end_time
     ? Math.floor(
         (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000
-      )
+      ) - pause_seconds
     : 0;
 
   try {
-    let insertid = 0;
+    let insertId = 0;
     try {
-      insertid = await DurationServices.postDuration({
+      insertId = await DurationServices.postDuration({
         user_id: user.id,
-        start_time,
-        end_time,
-        focus_seconds,
+        start_time: dayjs(start_time).format("YYYY-MM-DD HH:mm:ss"),
+        end_time: dayjs(end_time).format("YYYY-MM-DD HH:mm:ss"),
         interrupt_times,
+        focus_seconds,
+        pause_seconds,
         type: durationType,
         description,
       });
@@ -73,20 +76,20 @@ export const postDuration = async (
         "[duration controller][DurationServices.postDuration][Error] ",
         typeof err === "object" ? JSON.stringify(err) : err
       );
+      console.log("user id type", typeof user.id);
       res.status(500).json({
         message: "Post duration failed.",
       });
       return;
     }
-
-    const duration = await DurationServices.getDurationById(insertid);
+    const duration = await DurationServices.getDurationById(insertId);
     res.status(200).json({
       duration,
     });
     return;
   } catch (err) {
     console.error(
-      "[duration controller][DurationServices.postDuration][Error] ",
+      "[duration controller][DurationServices.getDurationById][Error] ",
       typeof err === "object" ? JSON.stringify(err) : err
     );
     res.status(500).json({

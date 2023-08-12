@@ -3,22 +3,35 @@ import { DurationQueries } from "../queries/durationQueries";
 import * as db from "./db";
 
 export const getDurationById = async (durationId: IDuration["id"]) => {
-  return await db.query<IDuration>(DurationQueries.GetDurationById, [
-    durationId,
-  ]);
+  const [duration] = await db.query<IDuration[]>(
+    DurationQueries.GetDurationById,
+    [durationId]
+  );
+  return duration;
 };
 
 export const postDuration = async ({
+  user_id,
   start_time,
   end_time,
   interrupt_times,
   focus_seconds,
+  pause_seconds,
   type,
   description,
 }: Omit<IDuration, "id">) => {
-  const { insertid } = await db.query<{ insertid: number }>(
+  const { insertId } = await db.query<{ insertId: number }>(
     DurationQueries.PostDuration,
-    [start_time, end_time, interrupt_times, focus_seconds, type, description]
+    [
+      user_id,
+      start_time,
+      end_time,
+      interrupt_times,
+      focus_seconds,
+      pause_seconds,
+      type,
+      description,
+    ]
   );
-  return insertid;
+  return insertId;
 };
