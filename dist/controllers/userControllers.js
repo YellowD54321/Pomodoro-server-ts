@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUserByGoogle = exports.registerUserByGoogle = exports.getUserByGoogleId = exports.getUserById = void 0;
+exports.loginTestAccount = exports.loginUserByGoogle = exports.registerUserByGoogle = exports.getUserByGoogleId = exports.getUserById = void 0;
 const UserServices = __importStar(require("../services/userServices"));
 const userHelper_1 = require("../helper/userHelper");
 const authHelper_1 = require("../helper/authHelper");
@@ -159,3 +159,44 @@ const loginUserByGoogle = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.loginUserByGoogle = loginUserByGoogle;
+const loginTestAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const [user] = yield UserServices.getTestAccountUser();
+        if (user) {
+            const token = (0, authHelper_1.createAuthToken)(user.id);
+            return res.status(200).json({
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+            });
+        }
+        else {
+            try {
+                const isSuccess = yield UserServices.registerTestAccount();
+                if (!isSuccess) {
+                    return res.status(500).json({
+                        message: "Register test account fail.",
+                    });
+                }
+            }
+            catch (err) {
+                console.error("[user controller][loginTestAccount][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+                return res.status(500).json({
+                    message: "Register test account fail.",
+                });
+            }
+            const [user] = yield UserServices.getTestAccountUser();
+            const token = (0, authHelper_1.createAuthToken)(user.id);
+            return res.status(200).json({
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+            });
+        }
+    }
+    catch (err) {
+        console.error("[user controller][loginTestAccount][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        return res.status(500).json({
+            message: "Login test account fail.",
+        });
+    }
+});
+exports.loginTestAccount = loginTestAccount;

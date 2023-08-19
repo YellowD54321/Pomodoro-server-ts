@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = exports.db = void 0;
+exports.testUserId = exports.auth = exports.db = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.db = {
@@ -17,3 +17,4 @@ exports.auth = {
     accessSecret: "75s8n#nX5moO",
     refreshSecret: "9Ue!td8U8uw0",
 };
+exports.testUserId = 54321;

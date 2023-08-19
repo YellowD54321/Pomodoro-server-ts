@@ -32,7 +32,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerUserByGoogle = exports.getUserByGoogleId = exports.getUserById = void 0;
+exports.registerTestAccount = exports.getTestAccountUser = exports.registerUserByGoogle = exports.getUserByGoogleId = exports.getUserById = void 0;
+const config_1 = require("../config");
 const userQueries_1 = require("../queries/userQueries");
 const db = __importStar(require("./db"));
 const getUserById = (userId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,3 +49,13 @@ const registerUserByGoogle = (googleId) => __awaiter(void 0, void 0, void 0, fun
     return result.affectedRows > 0;
 });
 exports.registerUserByGoogle = registerUserByGoogle;
+const getTestAccountUser = () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("getting test account");
+    return db.query(userQueries_1.UserQueries.GetUserById, [config_1.testUserId]);
+});
+exports.getTestAccountUser = getTestAccountUser;
+const registerTestAccount = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield db.query(userQueries_1.UserQueries.RegisterTestAccount, [config_1.testUserId]);
+    return result.affectedRows > 0;
+});
+exports.registerTestAccount = registerTestAccount;

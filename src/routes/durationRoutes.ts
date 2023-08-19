@@ -6,4 +6,6 @@ const DurationRouter = express.Router();
 DurationRouter.route("/:id").get(DurationControllers.getDurationById);
 DurationRouter.route("").post(DurationControllers.postDuration);
 
+DurationRouter.route("/test-data").post(DurationControllers.CreateTestData);
+
 export default DurationRouter;

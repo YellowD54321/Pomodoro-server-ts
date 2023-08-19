@@ -31,4 +31,5 @@ const DurationControllers = __importStar(require("../controllers/durationControl
 const DurationRouter = express_1.default.Router();
 DurationRouter.route("/:id").get(DurationControllers.getDurationById);
 DurationRouter.route("").post(DurationControllers.postDuration);
+DurationRouter.route("/test-data").post(DurationControllers.CreateTestData);
 exports.default = DurationRouter;

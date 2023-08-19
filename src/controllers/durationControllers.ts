@@ -4,6 +4,9 @@ import * as DurationServices from "../services/durationServices";
 import { isValidDate } from "../utils/check";
 import { durationTypes } from "../constants";
 import dayjs from "dayjs";
+import { addMinite, subtractDay } from "../utils/date/calculate";
+import { getBeginDate } from "../utils/date/set";
+import { testUserId } from "../config";
 
 export const getDurationById = async (
   req: IGetDurationReq,
@@ -76,7 +79,6 @@ export const postDuration = async (
         "[duration controller][DurationServices.postDuration][Error] ",
         typeof err === "object" ? JSON.stringify(err) : err
       );
-      console.log("user id type", typeof user.id);
       res.status(500).json({
         message: "Post duration failed.",
       });
@@ -97,4 +99,95 @@ export const postDuration = async (
     });
     return;
   }
+};
+
+export const CreateTestData = async (
+  req: IPostDurationReq,
+  res: Response
+): Promise<void> => {
+  const user = req.body.user;
+  if (user.id !== testUserId) {
+    res.status(401).json({
+      message: "Invalid user.",
+    });
+    return;
+  }
+
+  // Delete old test data first.
+  try {
+    await DurationServices.deleteDurationInTestAccount();
+  } catch (err) {
+    console.error(
+      "[duration controller][DurationServices.deleteDurationInTestAccount][Error] ",
+      typeof err === "object" ? JSON.stringify(err) : err
+    );
+    res.status(500).json({
+      message: "Delete duration failed.",
+    });
+    return;
+  }
+
+  const DAYS = 100;
+  const MIN_NUMBER_IN_ONE_DAY = 4;
+  const MAX_NUMBER_IN_ONE_DAY = 8;
+  const WORK_MINUTES = 50;
+  const REST_MINUTES = 10;
+  const ONE_DURATION = WORK_MINUTES + REST_MINUTES;
+  const DESCRIPTIONS = ["work", "study", "side project", "game"];
+  const FIRST_DAY = subtractDay(new Date(), DAYS);
+
+  for (let i = 0; i < DAYS; i++) {
+    const TODAY_NUMBER = Math.floor(
+      Math.random() * (MAX_NUMBER_IN_ONE_DAY - MIN_NUMBER_IN_ONE_DAY) +
+        MIN_NUMBER_IN_ONE_DAY
+    );
+    const FIRST_START_TIME = getBeginDate(FIRST_DAY);
+    for (let j = 0; j < TODAY_NUMBER; j++) {
+      const workStartTime = addMinite(FIRST_START_TIME, ONE_DURATION * j);
+      const workEndTime = addMinite(workStartTime, WORK_MINUTES);
+      const restStartTime = workEndTime;
+      const restEndTime = addMinite(restStartTime, REST_MINUTES);
+      const interrupt_times = 0;
+      const focus_seconds = WORK_MINUTES * 60;
+      const pause_seconds = 0;
+      const description =
+        DESCRIPTIONS[Math.floor(Math.random() * DESCRIPTIONS.length)];
+      try {
+        await DurationServices.postDuration({
+          user_id: user.id,
+          start_time: dayjs(workStartTime).format("YYYY-MM-DD HH:mm:ss"),
+          end_time: dayjs(workEndTime).format("YYYY-MM-DD HH:mm:ss"),
+          interrupt_times,
+          focus_seconds,
+          pause_seconds,
+          type: "work",
+          description,
+        });
+        await DurationServices.postDuration({
+          user_id: user.id,
+          start_time: dayjs(restStartTime).format("YYYY-MM-DD HH:mm:ss"),
+          end_time: dayjs(restEndTime).format("YYYY-MM-DD HH:mm:ss"),
+          interrupt_times,
+          focus_seconds: 0,
+          pause_seconds,
+          type: "rest",
+          description,
+        });
+      } catch (err) {
+        console.error(
+          "[duration controller][CreateTestData DurationServices.postDuration][Error] ",
+          typeof err === "object" ? JSON.stringify(err) : err
+        );
+        res.status(500).json({
+          message: "Post duration failed.",
+        });
+        return;
+      }
+    }
+  }
+
+  res.status(200).json({
+    isSuccess: true,
+  });
+  return;
 };

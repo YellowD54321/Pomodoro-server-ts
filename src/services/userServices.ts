@@ -1,3 +1,4 @@
+import { testUserId } from "../config";
 import { IUser } from "../models/userModel";
 import { UserQueries } from "../queries/userQueries";
 import * as db from "./db";
@@ -14,6 +15,20 @@ export const registerUserByGoogle = async (googleId: IUser["google_id"]) => {
   const result = await db.query<{ affectedRows: number }>(
     UserQueries.RegisterUserByGoogleId,
     [googleId]
+  );
+  return result.affectedRows > 0;
+};
+
+export const getTestAccountUser = async () => {
+  console.log("getting test account");
+
+  return db.query<IUser[]>(UserQueries.GetUserById, [testUserId]);
+};
+
+export const registerTestAccount = async () => {
+  const result = await db.query<{ affectedRows: number }>(
+    UserQueries.RegisterTestAccount,
+    [testUserId]
   );
   return result.affectedRows > 0;
 };

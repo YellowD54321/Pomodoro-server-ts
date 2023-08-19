@@ -32,7 +32,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postDuration = exports.getDurationById = void 0;
+exports.deleteDurationInTestAccount = exports.postDuration = exports.getDurationById = void 0;
+const config_1 = require("../config");
 const durationQueries_1 = require("../queries/durationQueries");
 const db = __importStar(require("./db"));
 const getDurationById = (durationId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,3 +55,7 @@ const postDuration = ({ user_id, start_time, end_time, interrupt_times, focus_se
     return insertId;
 });
 exports.postDuration = postDuration;
+const deleteDurationInTestAccount = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield db.query(durationQueries_1.DurationQueries.DeleteUserDuration, [config_1.testUserId]);
+});
+exports.deleteDurationInTestAccount = deleteDurationInTestAccount;

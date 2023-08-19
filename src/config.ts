@@ -14,3 +14,5 @@ export const auth = {
   accessSecret: "75s8n#nX5moO",
   refreshSecret: "9Ue!td8U8uw0",
 };
+
+export const testUserId = 54321;

@@ -161,3 +161,50 @@ export const loginUserByGoogle: RequestHandler = async (
     });
   }
 };
+
+export const loginTestAccount: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const [user] = await UserServices.getTestAccountUser();
+    if (user) {
+      const token = createAuthToken(user.id);
+      return res.status(200).json({
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+      });
+    } else {
+      try {
+        const isSuccess = await UserServices.registerTestAccount();
+        if (!isSuccess) {
+          return res.status(500).json({
+            message: "Register test account fail.",
+          });
+        }
+      } catch (err) {
+        console.error(
+          "[user controller][loginTestAccount][Error] ",
+          typeof err === "object" ? JSON.stringify(err) : err
+        );
+        return res.status(500).json({
+          message: "Register test account fail.",
+        });
+      }
+      const [user] = await UserServices.getTestAccountUser();
+      const token = createAuthToken(user.id);
+      return res.status(200).json({
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+      });
+    }
+  } catch (err) {
+    console.error(
+      "[user controller][loginTestAccount][Error] ",
+      typeof err === "object" ? JSON.stringify(err) : err
+    );
+    return res.status(500).json({
+      message: "Login test account fail.",
+    });
+  }
+};

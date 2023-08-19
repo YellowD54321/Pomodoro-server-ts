@@ -11,4 +11,9 @@ export const UserQueries = {
         INSERT INTO users (id, google_id)
           VALUE (null, ?)
     `,
+
+  RegisterTestAccount: `
+    INSERT INTO users (id, google_id)
+      VALUE (?, null)
+  `,
 };

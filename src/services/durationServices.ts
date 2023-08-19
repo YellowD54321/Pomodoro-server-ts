@@ -1,3 +1,4 @@
+import { testUserId } from "../config";
 import { IDuration } from "../models/durationModel";
 import { DurationQueries } from "../queries/durationQueries";
 import * as db from "./db";
@@ -34,4 +35,8 @@ export const postDuration = async ({
     ]
   );
   return insertId;
+};
+
+export const deleteDurationInTestAccount = async () => {
+  await db.query(DurationQueries.DeleteUserDuration, [testUserId]);
 };
