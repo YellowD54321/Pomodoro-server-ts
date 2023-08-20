@@ -1,14 +1,40 @@
 import { testUserId } from "../config";
-import { IDuration } from "../models/durationModel";
+import { IDuration, IGetDurationByParams } from "../models/durationModel";
 import { DurationQueries } from "../queries/durationQueries";
 import * as db from "./db";
 
-export const getDurationById = async (durationId: IDuration["id"]) => {
+export const getDurationById = async (
+  durationId: IDuration["id"]
+): Promise<IDuration> => {
   const [duration] = await db.query<IDuration[]>(
     DurationQueries.GetDurationById,
     [durationId]
   );
   return duration;
+};
+
+export const getDurationByParams = async ({
+  user_id,
+  begin_date,
+  end_date,
+  type,
+  description,
+}: IGetDurationByParams): Promise<IDuration[]> => {
+  const durations = await db.query<IDuration[]>(
+    DurationQueries.GetDurationByParams,
+    [
+      user_id,
+      begin_date,
+      begin_date,
+      end_date,
+      end_date,
+      type,
+      type,
+      description,
+      description,
+    ]
+  );
+  return durations;
 };
 
 export const postDuration = async ({

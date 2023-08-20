@@ -3,6 +3,7 @@ import * as DurationControllers from "../controllers/durationControllers";
 
 const DurationRouter = express.Router();
 
+DurationRouter.route("").get(DurationControllers.getDurationByParams);
 DurationRouter.route("/:id").get(DurationControllers.getDurationById);
 DurationRouter.route("").post(DurationControllers.postDuration);
 

@@ -21,11 +21,11 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.use("/user", UserRouter);
+app.use("/v1/user", UserRouter);
 
 app.use(authorize);
 
-app.use("/durations", DurationRouter);
+app.use("/v1/durations", DurationRouter);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

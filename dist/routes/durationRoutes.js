@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const DurationControllers = __importStar(require("../controllers/durationControllers"));
 const DurationRouter = express_1.default.Router();
+DurationRouter.route("").get(DurationControllers.getDurationByParams);
 DurationRouter.route("/:id").get(DurationControllers.getDurationById);
 DurationRouter.route("").post(DurationControllers.postDuration);
 DurationRouter.route("/test-data").post(DurationControllers.CreateTestData);

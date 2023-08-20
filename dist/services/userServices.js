@@ -50,7 +50,6 @@ const registerUserByGoogle = (googleId) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.registerUserByGoogle = registerUserByGoogle;
 const getTestAccountUser = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("getting test account");
     return db.query(userQueries_1.UserQueries.GetUserById, [config_1.testUserId]);
 });
 exports.getTestAccountUser = getTestAccountUser;

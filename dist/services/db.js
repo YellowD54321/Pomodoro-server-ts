@@ -35,12 +35,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.query = void 0;
+exports.query = exports.connection = void 0;
 const promise_1 = __importDefault(require("mysql2/promise"));
 const config = __importStar(require("../config"));
+exports.connection = promise_1.default.createPool(config.db);
 const query = (sql, params) => __awaiter(void 0, void 0, void 0, function* () {
-    const connection = yield promise_1.default.createConnection(config.db);
-    const [rows, fields] = yield connection.execute(sql, params);
+    const [rows, fields] = yield exports.connection.query(sql, params);
     return rows;
 });
 exports.query = query;

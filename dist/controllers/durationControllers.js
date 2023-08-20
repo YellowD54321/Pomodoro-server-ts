@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTestData = exports.postDuration = exports.getDurationById = void 0;
+exports.CreateTestData = exports.postDuration = exports.getDurationById = exports.getDurationByParams = void 0;
 const DurationServices = __importStar(require("../services/durationServices"));
 const check_1 = require("../utils/check");
 const constants_1 = require("../constants");
@@ -43,6 +43,32 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const calculate_1 = require("../utils/date/calculate");
 const set_1 = require("../utils/date/set");
 const config_1 = require("../config");
+const getDurationByParams = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.body.user;
+    const begin_date = req.params.begin_date;
+    const end_date = req.params.end_date;
+    const durationType = req.params.type;
+    const description = req.params.description;
+    try {
+        const durations = yield DurationServices.getDurationByParams({
+            user_id: user.id,
+            begin_date,
+            end_date,
+            type: durationType,
+            description,
+        });
+        res.status(200).json({
+            durations,
+        });
+    }
+    catch (err) {
+        console.error("[duration controller][getDurationByParams][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        res.status(500).json({
+            message: "There was an error when fetching duration",
+        });
+    }
+});
+exports.getDurationByParams = getDurationByParams;
 const getDurationById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const duration = yield DurationServices.getDurationById(Number(req.params.id));
@@ -146,7 +172,8 @@ const CreateTestData = (req, res) => __awaiter(void 0, void 0, void 0, function*
     for (let i = 0; i < DAYS; i++) {
         const TODAY_NUMBER = Math.floor(Math.random() * (MAX_NUMBER_IN_ONE_DAY - MIN_NUMBER_IN_ONE_DAY) +
             MIN_NUMBER_IN_ONE_DAY);
-        const FIRST_START_TIME = (0, set_1.getBeginDate)(FIRST_DAY);
+        const currentDay = (0, calculate_1.addDay)(FIRST_DAY, i);
+        const FIRST_START_TIME = (0, set_1.getBeginDate)(currentDay);
         for (let j = 0; j < TODAY_NUMBER; j++) {
             const workStartTime = (0, calculate_1.addMinite)(FIRST_START_TIME, ONE_DURATION * j);
             const workEndTime = (0, calculate_1.addMinite)(workStartTime, WORK_MINUTES);

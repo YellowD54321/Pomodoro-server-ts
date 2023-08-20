@@ -15,7 +15,17 @@ export interface IDuration {
   description: string;
 }
 
-export interface IGetDurationReq extends Request<{ id: IDuration["id"] }> {}
+export interface IGetDurationByParams {
+  user_id: IDuration["id"];
+  begin_date?: string;
+  end_date?: string;
+  type?: IDuration["type"];
+  description: IDuration["description"];
+}
+
+export interface IGetDurationByParamsReq
+  extends Request<IGetDurationByParams> {}
+export interface IGetDurationByIdReq extends Request<{ id: IDuration["id"] }> {}
 export interface IPostDurationReq
   extends Request<
     {},

@@ -1,15 +1,50 @@
-import { IGetDurationReq, IPostDurationReq } from "./../models/durationModel";
+import {
+  IGetDurationByIdReq,
+  IGetDurationByParamsReq,
+  IPostDurationReq,
+} from "./../models/durationModel";
 import { Response } from "express";
 import * as DurationServices from "../services/durationServices";
 import { isValidDate } from "../utils/check";
 import { durationTypes } from "../constants";
 import dayjs from "dayjs";
-import { addMinite, subtractDay } from "../utils/date/calculate";
+import { addDay, addMinite, subtractDay } from "../utils/date/calculate";
 import { getBeginDate } from "../utils/date/set";
 import { testUserId } from "../config";
 
+export const getDurationByParams = async (
+  req: IGetDurationByParamsReq,
+  res: Response
+): Promise<void> => {
+  const user = req.body.user;
+  const begin_date = req.params.begin_date;
+  const end_date = req.params.end_date;
+  const durationType = req.params.type;
+  const description = req.params.description;
+  try {
+    const durations = await DurationServices.getDurationByParams({
+      user_id: user.id,
+      begin_date,
+      end_date,
+      type: durationType,
+      description,
+    });
+    res.status(200).json({
+      durations,
+    });
+  } catch (err) {
+    console.error(
+      "[duration controller][getDurationByParams][Error] ",
+      typeof err === "object" ? JSON.stringify(err) : err
+    );
+    res.status(500).json({
+      message: "There was an error when fetching duration",
+    });
+  }
+};
+
 export const getDurationById = async (
-  req: IGetDurationReq,
+  req: IGetDurationByIdReq,
   res: Response
 ): Promise<void> => {
   try {
@@ -141,7 +176,9 @@ export const CreateTestData = async (
       Math.random() * (MAX_NUMBER_IN_ONE_DAY - MIN_NUMBER_IN_ONE_DAY) +
         MIN_NUMBER_IN_ONE_DAY
     );
-    const FIRST_START_TIME = getBeginDate(FIRST_DAY);
+    const currentDay = addDay(FIRST_DAY, i);
+    const FIRST_START_TIME = getBeginDate(currentDay);
+
     for (let j = 0; j < TODAY_NUMBER; j++) {
       const workStartTime = addMinite(FIRST_START_TIME, ONE_DURATION * j);
       const workEndTime = addMinite(workStartTime, WORK_MINUTES);

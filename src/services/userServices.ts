@@ -20,8 +20,6 @@ export const registerUserByGoogle = async (googleId: IUser["google_id"]) => {
 };
 
 export const getTestAccountUser = async () => {
-  console.log("getting test account");
-
   return db.query<IUser[]>(UserQueries.GetUserById, [testUserId]);
 };
 
