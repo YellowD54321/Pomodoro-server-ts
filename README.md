@@ -1,6 +1,6 @@
 # Pomodoro Side Project - Backend
 
-[Frontend on Github][https://github.com/YellowD54321/Pomodoro-ts]
+[Frontend on Github](https://github.com/YellowD54321/Pomodoro-ts)
 
 ## Tools
 
