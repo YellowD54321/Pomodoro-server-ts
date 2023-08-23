@@ -20,11 +20,18 @@ export interface IGetDurationByParams {
   begin_date?: string;
   end_date?: string;
   type?: IDuration["type"];
-  description: IDuration["description"];
+  description?: IDuration["description"];
 }
 
 export interface IGetDurationByParamsReq
-  extends Request<IGetDurationByParams> {}
+  extends Request<
+    {},
+    {},
+    {
+      user: IUser;
+    },
+    IGetDurationByParams
+  > {}
 export interface IGetDurationByIdReq extends Request<{ id: IDuration["id"] }> {}
 export interface IPostDurationReq
   extends Request<

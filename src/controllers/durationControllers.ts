@@ -17,11 +17,17 @@ export const getDurationByParams = async (
   res: Response
 ): Promise<void> => {
   const user = req.body.user;
-  const begin_date = req.params.begin_date;
-  const end_date = req.params.end_date;
-  const durationType = req.params.type;
-  const description = req.params.description;
+  const begin_date = req.query.begin_date;
+  const end_date = req.query.end_date;
+  const durationType = req.query.type;
+  const description = req.query.description;
   try {
+    console.log("user.id", user.id);
+    console.log("begin_date", begin_date);
+    console.log("end_date", end_date);
+    console.log("durationType", durationType);
+    console.log("description", description);
+
     const durations = await DurationServices.getDurationByParams({
       user_id: user.id,
       begin_date,
