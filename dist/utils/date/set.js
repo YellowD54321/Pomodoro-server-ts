@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getEndDate = exports.getBeginDate = void 0;
-const check_1 = require("../check");
+const check_1 = require("./check");
 const getBeginDate = (date) => {
     if (!(0, check_1.isValidDate)(date)) {
         throw new Error("date must be Date type or string which can be transformed to valid date.");

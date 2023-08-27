@@ -5,7 +5,7 @@ import {
 } from "./../models/durationModel";
 import { Response } from "express";
 import * as DurationServices from "../services/durationServices";
-import { isValidDate } from "../utils/check";
+import { isValidDate } from "../utils/date/check";
 import { durationTypes } from "../constants";
 import dayjs from "dayjs";
 import { addDay, addMinite, subtractDay } from "../utils/date/calculate";
@@ -22,12 +22,6 @@ export const getDurationByParams = async (
   const durationType = req.query.type;
   const description = req.query.description;
   try {
-    console.log("user.id", user.id);
-    console.log("begin_date", begin_date);
-    console.log("end_date", end_date);
-    console.log("durationType", durationType);
-    console.log("description", description);
-
     const durations = await DurationServices.getDurationByParams({
       user_id: user.id,
       begin_date,

@@ -37,7 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTestData = exports.postDuration = exports.getDurationById = exports.getDurationByParams = void 0;
 const DurationServices = __importStar(require("../services/durationServices"));
-const check_1 = require("../utils/check");
+const check_1 = require("../utils/date/check");
 const constants_1 = require("../constants");
 const dayjs_1 = __importDefault(require("dayjs"));
 const calculate_1 = require("../utils/date/calculate");
@@ -50,11 +50,6 @@ const getDurationByParams = (req, res) => __awaiter(void 0, void 0, void 0, func
     const durationType = req.query.type;
     const description = req.query.description;
     try {
-        console.log("user.id", user.id);
-        console.log("begin_date", begin_date);
-        console.log("end_date", end_date);
-        console.log("durationType", durationType);
-        console.log("description", description);
         const durations = yield DurationServices.getDurationByParams({
             user_id: user.id,
             begin_date,

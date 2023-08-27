@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { isValidDate } from "../check";
+import { isValidDate } from "./check";
 
 const METHOD = {
   ADD: "add",

@@ -1,4 +1,4 @@
-import { isValidDate } from "../check";
+import { isValidDate } from "./check";
 
 export const getBeginDate = (date: Date | string): Date => {
   if (!isValidDate(date)) {
