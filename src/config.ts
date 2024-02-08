@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 export const db = {
-  host: "localhost",
+  host: 'localhost',
   user: process.env.MYSQL_USER_NAME,
   password: process.env.MYSQL_PASSWORD,
-  database: "pomodoro",
+  database: 'pomodoro',
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
@@ -18,8 +18,8 @@ export const db = {
 };
 
 export const auth = {
-  accessSecret: "75s8n#nX5moO",
-  refreshSecret: "9Ue!td8U8uw0",
+  accessSecret: '75s8n#nX5moO',
+  refreshSecret: '9Ue!td8U8uw0',
 };
 
 export const testUserId = 54321;

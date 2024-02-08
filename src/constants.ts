@@ -1,1 +1,1 @@
-export const durationTypes = ["work", "rest", "pause"];
+export const durationTypes = ['work', 'rest', 'pause'];

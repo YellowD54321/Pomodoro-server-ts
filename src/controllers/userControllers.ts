@@ -1,17 +1,17 @@
-import { Request, RequestHandler, Response } from "express";
-import * as UserServices from "../services/userServices";
+import { Request, RequestHandler, Response } from 'express';
+import * as UserServices from '../services/userServices';
 import {
   IGetUserByGoogleIdReq,
   IGetUserReq,
   IRegisterUserByGoogleReq,
-} from "../models/userModel";
-import { getGoogleId } from "../helper/userHelper";
-import { createAuthToken } from "../helper/authHelper";
+} from '../models/userModel';
+import { getGoogleId } from '../helper/userHelper';
+import { createAuthToken } from '../helper/authHelper';
 
-// @ts-ignore
+// @ts-expect-error: ignore this for ts
 export const getUserById: RequestHandler = async (
   req: IGetUserReq,
-  res: Response
+  res: Response,
 ) => {
   try {
     const user = await UserServices.getUserById(Number(req.params.id));
@@ -20,19 +20,19 @@ export const getUserById: RequestHandler = async (
     });
   } catch (err) {
     console.error(
-      "[user controller][getUserById][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][getUserById][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when fetching user",
+      message: 'There was an error when fetching user',
     });
   }
 };
 
-// @ts-ignore
+// @ts-expect-error: ignore this for ts
 export const getUserByGoogleId: RequestHandler = async (
   req: IGetUserByGoogleIdReq,
-  res: Response
+  res: Response,
 ) => {
   try {
     const user = await UserServices.getUserByGoogleId(req.params.google_id);
@@ -41,44 +41,44 @@ export const getUserByGoogleId: RequestHandler = async (
     });
   } catch (err) {
     console.error(
-      "[user controller][getUserByGoogleId][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][getUserByGoogleId][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when fetching user",
+      message: 'There was an error when fetching user',
     });
   }
 };
 
 export const registerUserByGoogle: RequestHandler = async (
   req: IRegisterUserByGoogleReq,
-  res: Response
+  res: Response,
 ) => {
   const accessToken = req.body.access_token;
   if (!accessToken) {
     res.status(400).json({
-      message: "access_token is required.",
+      message: 'access_token is required.',
     });
     return;
   }
 
-  let googleId = "";
+  let googleId = '';
   try {
     googleId = await getGoogleId(accessToken);
   } catch (err) {
     console.error(
-      "[user controller][registerUserByGoogle getGoogleId][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][registerUserByGoogle getGoogleId][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when registering user",
+      message: 'There was an error when registering user',
     });
     return;
   }
 
   if (!googleId) {
     res.status(400).json({
-      message: "Invalid access_token.",
+      message: 'Invalid access_token.',
     });
     return;
   }
@@ -87,7 +87,7 @@ export const registerUserByGoogle: RequestHandler = async (
     const [oldUser] = await UserServices.getUserByGoogleId(googleId);
     if (oldUser) {
       res.status(406).json({
-        message: "Google account is already registered.",
+        message: 'Google account is already registered.',
       });
       return;
     }
@@ -98,43 +98,43 @@ export const registerUserByGoogle: RequestHandler = async (
     });
   } catch (err) {
     console.error(
-      "[user controller][registerUserByGoogle][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][registerUserByGoogle][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when registering user",
+      message: 'There was an error when registering user',
     });
   }
 };
 
 export const loginUserByGoogle: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   const accessToken = req.body.access_token;
   if (!accessToken) {
     return res.status(400).json({
-      message: "access_token is required.",
+      message: 'access_token is required.',
     });
   }
 
-  let googleId = "";
+  let googleId = '';
   try {
     googleId = await getGoogleId(accessToken);
   } catch (err) {
     console.error(
-      "[user controller][loginUserByGoogle getGoogleId][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][loginUserByGoogle getGoogleId][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when signing in user",
+      message: 'There was an error when signing in user',
     });
     return;
   }
 
   if (!googleId) {
     res.status(400).json({
-      message: "Invalid access_token.",
+      message: 'Invalid access_token.',
     });
     return;
   }
@@ -153,18 +153,18 @@ export const loginUserByGoogle: RequestHandler = async (
     });
   } catch (err) {
     console.error(
-      "[user controller][loginUserByGoogle][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][loginUserByGoogle][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     res.status(500).json({
-      message: "There was an error when signing in user",
+      message: 'There was an error when signing in user',
     });
   }
 };
 
 export const loginTestAccount: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const [user] = await UserServices.getTestAccountUser();
@@ -179,16 +179,16 @@ export const loginTestAccount: RequestHandler = async (
         const isSuccess = await UserServices.registerTestAccount();
         if (!isSuccess) {
           return res.status(500).json({
-            message: "Register test account fail.",
+            message: 'Register test account fail.',
           });
         }
       } catch (err) {
         console.error(
-          "[user controller][loginTestAccount][Error] ",
-          typeof err === "object" ? JSON.stringify(err) : err
+          '[user controller][loginTestAccount][Error] ',
+          typeof err === 'object' ? JSON.stringify(err) : err,
         );
         return res.status(500).json({
-          message: "Register test account fail.",
+          message: 'Register test account fail.',
         });
       }
       const [user] = await UserServices.getTestAccountUser();
@@ -200,11 +200,11 @@ export const loginTestAccount: RequestHandler = async (
     }
   } catch (err) {
     console.error(
-      "[user controller][loginTestAccount][Error] ",
-      typeof err === "object" ? JSON.stringify(err) : err
+      '[user controller][loginTestAccount][Error] ',
+      typeof err === 'object' ? JSON.stringify(err) : err,
     );
     return res.status(500).json({
-      message: "Login test account fail.",
+      message: 'Login test account fail.',
     });
   }
 };

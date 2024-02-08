@@ -1,6 +1,6 @@
-import { IAnalysis, IGetAnalysisByParam } from "../models/analysisModel";
-import { AnalysisQueries } from "../queries/analysisQueries";
-import * as db from "./db";
+import { IAnalysis, IGetAnalysisByParam } from '../models/analysisModel';
+import { AnalysisQueries } from '../queries/analysisQueries';
+import * as db from './db';
 
 export const GetAnalysisWithDay = async ({
   user_id,
@@ -21,7 +21,7 @@ export const GetAnalysisWithDay = async ({
       type,
       description,
       description,
-    ]
+    ],
   );
   return analysises;
 };
@@ -45,7 +45,7 @@ export const GetAnalysisWithMonth = async ({
       type,
       description,
       description,
-    ]
+    ],
   );
   return analysises;
 };

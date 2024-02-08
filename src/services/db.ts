@@ -1,12 +1,12 @@
-import mysql from "mysql2/promise";
-import * as config from "../config";
+import mysql from 'mysql2/promise';
+import * as config from '../config';
 
 export const connection = mysql.createPool(config.db);
 
 export const query = async <T = unknown>(
   sql: string,
-  params: string[] | object
+  params: string[] | object,
 ): Promise<T> => {
-  const [rows, fields] = await connection.query(sql, params);
+  const [rows] = await connection.query(sql, params);
   return <T>rows;
 };

@@ -1,9 +1,9 @@
-import { isValidDate } from "./check";
+import { isValidDate } from './check';
 
 export const getBeginDate = (date: Date | string): Date => {
   if (!isValidDate(date)) {
     throw new Error(
-      "date must be Date type or string which can be transformed to valid date."
+      'date must be Date type or string which can be transformed to valid date.',
     );
   }
   const begin = new Date(date);
@@ -14,7 +14,7 @@ export const getBeginDate = (date: Date | string): Date => {
 export const getEndDate = (date: Date | string): Date => {
   if (!isValidDate(date)) {
     throw new Error(
-      "date must be Date type or string which can be transformed to valid date."
+      'date must be Date type or string which can be transformed to valid date.',
     );
   }
   const begin = new Date(date);

@@ -1,14 +1,14 @@
-import { testUserId } from "../config";
-import { IDuration, IGetDurationByParams } from "../models/durationModel";
-import { DurationQueries } from "../queries/durationQueries";
-import * as db from "./db";
+import { testUserId } from '../config';
+import { IDuration, IGetDurationByParams } from '../models/durationModel';
+import { DurationQueries } from '../queries/durationQueries';
+import * as db from './db';
 
 export const getDurationById = async (
-  durationId: IDuration["id"]
+  durationId: IDuration['id'],
 ): Promise<IDuration> => {
   const [duration] = await db.query<IDuration[]>(
     DurationQueries.GetDurationById,
-    [durationId]
+    [durationId],
   );
   return duration;
 };
@@ -32,7 +32,7 @@ export const getDurationByParams = async ({
       type,
       description,
       description,
-    ]
+    ],
   );
   return durations;
 };
@@ -46,7 +46,7 @@ export const postDuration = async ({
   pause_seconds,
   type,
   description,
-}: Omit<IDuration, "id">) => {
+}: Omit<IDuration, 'id'>) => {
   const { insertId } = await db.query<{ insertId: number }>(
     DurationQueries.PostDuration,
     [
@@ -58,7 +58,7 @@ export const postDuration = async ({
       pause_seconds,
       type,
       description,
-    ]
+    ],
   );
   return insertId;
 };
