@@ -1,15 +1,18 @@
+import { PrismaClient } from '@prisma/client';
 import { testUserId } from '../config';
 import { IDuration, IGetDurationByParams } from '../models/durationModel';
-import { DurationQueries } from '../queries/durationQueries';
-import * as db from './db';
+
+const prisma = new PrismaClient();
 
 export const getDurationById = async (
-  durationId: IDuration['id'],
-): Promise<IDuration> => {
-  const [duration] = await db.query<IDuration[]>(
-    DurationQueries.GetDurationById,
-    [durationId],
-  );
+  durationId: string,
+): Promise<IDuration | null> => {
+  const duration = await prisma.duration.findUnique({
+    where: {
+      id: durationId,
+    },
+  });
+
   return duration;
 };
 
@@ -20,20 +23,16 @@ export const getDurationByParams = async ({
   type,
   description,
 }: IGetDurationByParams): Promise<IDuration[]> => {
-  const durations = await db.query<IDuration[]>(
-    DurationQueries.GetDurationByParams,
-    [
+  const durations = await prisma.duration.findMany({
+    where: {
       user_id,
-      begin_date,
-      begin_date,
-      end_date,
-      end_date,
-      type,
-      type,
-      description,
-      description,
-    ],
-  );
+      ...(begin_date && { start_time: begin_date }),
+      ...(end_date && { end_time: end_date }),
+      ...(type && { type }),
+      ...(typeof description === 'string' && { description }),
+    },
+  });
+
   return durations;
 };
 
@@ -47,10 +46,13 @@ export const postDuration = async ({
   type,
   description,
 }: Omit<IDuration, 'id'>) => {
-  const { insertId } = await db.query<{ insertId: number }>(
-    DurationQueries.PostDuration,
-    [
-      user_id,
+  const newDuration = await prisma.duration.create({
+    data: {
+      user: {
+        connect: {
+          id: user_id,
+        },
+      },
       start_time,
       end_time,
       interrupt_times,
@@ -58,11 +60,16 @@ export const postDuration = async ({
       pause_seconds,
       type,
       description,
-    ],
-  );
-  return insertId;
+    },
+  });
+
+  return newDuration.id;
 };
 
 export const deleteDurationInTestAccount = async () => {
-  await db.query(DurationQueries.DeleteUserDuration, [testUserId]);
+  await prisma.duration.deleteMany({
+    where: {
+      user_id: testUserId,
+    },
+  });
 };

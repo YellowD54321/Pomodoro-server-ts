@@ -1,26 +1,25 @@
 import { Request } from 'express';
 import { IUser } from './userModel';
-
-export type IDurationType = 'work' | 'rest';
+import { DURATION_TYPE } from '@prisma/client';
 
 export interface IDuration {
-  id: number;
-  user_id: number;
-  start_time: string;
-  end_time?: string;
+  id: string;
+  user_id: string;
+  start_time: Date;
+  end_time: Date | null;
   interrupt_times: number;
   focus_seconds: number;
   pause_seconds: number;
-  type: IDurationType;
-  description: string;
+  type: DURATION_TYPE;
+  description: string | null;
 }
 
 export interface IGetDurationByParams {
-  user_id: IDuration['id'];
+  user_id: string;
   begin_date?: string;
   end_date?: string;
-  type?: IDuration['type'];
-  description?: IDuration['description'];
+  type?: DURATION_TYPE;
+  description?: string;
 }
 
 export interface IGetDurationByParamsReq
@@ -43,7 +42,7 @@ export interface IPostDurationReq
       end_time?: IDuration['end_time'];
       interrupt_times?: IDuration['interrupt_times'];
       pause_seconds?: IDuration['pause_seconds'];
-      type: IDuration['type'];
-      description?: IDuration['description'];
+      type: DURATION_TYPE;
+      description?: string;
     }
   > {}

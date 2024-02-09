@@ -14,15 +14,14 @@ export const getUserById: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const user = await UserServices.getUserById(Number(req.params.id));
+    const user = await UserServices.getUserById(req.params.id);
+
     res.status(200).json({
       user,
     });
   } catch (err) {
-    console.error(
-      '[user controller][getUserById][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
+    console.error('[user controller][getUserById][Error] ', err);
+
     res.status(500).json({
       message: 'There was an error when fetching user',
     });
@@ -36,14 +35,13 @@ export const getUserByGoogleId: RequestHandler = async (
 ) => {
   try {
     const user = await UserServices.getUserByGoogleId(req.params.google_id);
+
     res.status(200).json({
       user,
     });
   } catch (err) {
-    console.error(
-      '[user controller][getUserByGoogleId][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
+    console.error('[user controller][getUserByGoogleId][Error] ', err);
+
     res.status(500).json({
       message: 'There was an error when fetching user',
     });
@@ -55,52 +53,51 @@ export const registerUserByGoogle: RequestHandler = async (
   res: Response,
 ) => {
   const accessToken = req.body.access_token;
+
   if (!accessToken) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'access_token is required.',
     });
-    return;
   }
 
   let googleId = '';
+
   try {
     googleId = await getGoogleId(accessToken);
   } catch (err) {
     console.error(
       '[user controller][registerUserByGoogle getGoogleId][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
+      err,
     );
-    res.status(500).json({
+
+    return res.status(500).json({
       message: 'There was an error when registering user',
     });
-    return;
   }
 
   if (!googleId) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'Invalid access_token.',
     });
-    return;
   }
 
   try {
-    const [oldUser] = await UserServices.getUserByGoogleId(googleId);
+    const oldUser = await UserServices.getUserByGoogleId(googleId);
+
     if (oldUser) {
-      res.status(406).json({
+      return res.status(406).json({
         message: 'Google account is already registered.',
       });
-      return;
     }
 
     const isSuccess = await UserServices.registerUserByGoogle(googleId);
+
     res.status(200).json({
       success: isSuccess,
     });
   } catch (err) {
-    console.error(
-      '[user controller][registerUserByGoogle][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
+    console.error('[user controller][registerUserByGoogle][Error] ', err);
+
     res.status(500).json({
       message: 'There was an error when registering user',
     });
@@ -112,6 +109,7 @@ export const loginUserByGoogle: RequestHandler = async (
   res: Response,
 ) => {
   const accessToken = req.body.access_token;
+
   if (!accessToken) {
     return res.status(400).json({
       message: 'access_token is required.',
@@ -119,43 +117,44 @@ export const loginUserByGoogle: RequestHandler = async (
   }
 
   let googleId = '';
+
   try {
     googleId = await getGoogleId(accessToken);
   } catch (err) {
     console.error(
       '[user controller][loginUserByGoogle getGoogleId][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
+      err,
     );
-    res.status(500).json({
+
+    return res.status(500).json({
       message: 'There was an error when signing in user',
     });
-    return;
   }
 
   if (!googleId) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'Invalid access_token.',
     });
-    return;
   }
 
   try {
-    const [user] = await UserServices.getUserByGoogleId(googleId);
+    const user = await UserServices.getUserByGoogleId(googleId);
+
     if (!user) {
       return res.status(406).json({
         message: "user didn't register with this google account",
       });
     }
+
     const token = createAuthToken(user.id);
+
     return res.status(200).json({
       access_token: token.access_token,
       refresh_token: token.refresh_token,
     });
   } catch (err) {
-    console.error(
-      '[user controller][loginUserByGoogle][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
+    console.error('[user controller][loginUserByGoogle][Error] ', err);
+
     res.status(500).json({
       message: 'There was an error when signing in user',
     });
@@ -167,7 +166,7 @@ export const loginTestAccount: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const [user] = await UserServices.getTestAccountUser();
+    const user = await UserServices.getTestAccountUser();
     if (user) {
       const token = createAuthToken(user.id);
       return res.status(200).json({
@@ -177,32 +176,37 @@ export const loginTestAccount: RequestHandler = async (
     } else {
       try {
         const isSuccess = await UserServices.registerTestAccount();
+
         if (!isSuccess) {
           return res.status(500).json({
             message: 'Register test account fail.',
           });
         }
       } catch (err) {
-        console.error(
-          '[user controller][loginTestAccount][Error] ',
-          typeof err === 'object' ? JSON.stringify(err) : err,
-        );
+        console.error('[user controller][loginTestAccount][Error] ', err);
+
         return res.status(500).json({
           message: 'Register test account fail.',
         });
       }
-      const [user] = await UserServices.getTestAccountUser();
+      const user = await UserServices.getTestAccountUser();
+
+      if (!user) {
+        return res.status(500).json({
+          message: 'test account not found',
+        });
+      }
+
       const token = createAuthToken(user.id);
+
       return res.status(200).json({
         access_token: token.access_token,
         refresh_token: token.refresh_token,
       });
     }
   } catch (err) {
-    console.error(
-      '[user controller][loginTestAccount][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
+    console.error('[user controller][loginTestAccount][Error] ', err);
+
     return res.status(500).json({
       message: 'Login test account fail.',
     });

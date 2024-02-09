@@ -48,14 +48,15 @@ const GetAnalysisWithDay = (req, res) => __awaiter(void 0, void 0, void 0, funct
             type: durationType,
             description,
         });
-        res.status(200).json({
+        console.log('#### analysises', analysises);
+        return res.status(200).json({
             analysises,
         });
     }
     catch (err) {
-        console.error("[analysis controller][GetAnalysisWithDay][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when fetching analysis data",
+        console.error('[analysis controller][GetAnalysisWithDay][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when fetching analysis data',
         });
     }
 });
@@ -74,14 +75,15 @@ const GetAnalysisWithMonth = (req, res) => __awaiter(void 0, void 0, void 0, fun
             type: durationType,
             description,
         });
-        res.status(200).json({
+        console.log('#### analysises', analysises);
+        return res.status(200).json({
             analysises,
         });
     }
     catch (err) {
-        console.error("[analysis controller][GetAnalysisWithMonth][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when fetching analysis data",
+        console.error('[analysis controller][GetAnalysisWithMonth][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when fetching analysis data',
         });
     }
 });

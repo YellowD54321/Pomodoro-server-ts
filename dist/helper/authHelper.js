@@ -8,10 +8,10 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const createAuthToken = (userId) => {
     const accessToken = jsonwebtoken_1.default.sign({ id: userId }, config_1.auth.accessSecret, {
-        expiresIn: "1h",
+        expiresIn: '1h',
     });
     const refreshToken = jsonwebtoken_1.default.sign({ id: userId }, config_1.auth.refreshSecret, {
-        expiresIn: "7d",
+        expiresIn: '7d',
     });
     const token = {
         access_token: accessToken,

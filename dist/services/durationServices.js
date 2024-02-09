@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -33,44 +10,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteDurationInTestAccount = exports.postDuration = exports.getDurationByParams = exports.getDurationById = void 0;
+const client_1 = require("@prisma/client");
 const config_1 = require("../config");
-const durationQueries_1 = require("../queries/durationQueries");
-const db = __importStar(require("./db"));
+const prisma = new client_1.PrismaClient();
 const getDurationById = (durationId) => __awaiter(void 0, void 0, void 0, function* () {
-    const [duration] = yield db.query(durationQueries_1.DurationQueries.GetDurationById, [durationId]);
+    const duration = yield prisma.duration.findUnique({
+        where: {
+            id: durationId,
+        },
+    });
     return duration;
 });
 exports.getDurationById = getDurationById;
 const getDurationByParams = ({ user_id, begin_date, end_date, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const durations = yield db.query(durationQueries_1.DurationQueries.GetDurationByParams, [
-        user_id,
-        begin_date,
-        begin_date,
-        end_date,
-        end_date,
-        type,
-        type,
-        description,
-        description,
-    ]);
+    const durations = yield prisma.duration.findMany({
+        where: Object.assign(Object.assign(Object.assign(Object.assign({ user_id }, (begin_date && { start_time: begin_date })), (end_date && { end_time: end_date })), (type && { type })), (typeof description === 'string' && { description })),
+    });
     return durations;
 });
 exports.getDurationByParams = getDurationByParams;
 const postDuration = ({ user_id, start_time, end_time, interrupt_times, focus_seconds, pause_seconds, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const { insertId } = yield db.query(durationQueries_1.DurationQueries.PostDuration, [
-        user_id,
-        start_time,
-        end_time,
-        interrupt_times,
-        focus_seconds,
-        pause_seconds,
-        type,
-        description,
-    ]);
-    return insertId;
+    const newDuration = yield prisma.duration.create({
+        data: {
+            user: {
+                connect: {
+                    id: user_id,
+                },
+            },
+            start_time,
+            end_time,
+            interrupt_times,
+            focus_seconds,
+            pause_seconds,
+            type,
+            description,
+        },
+    });
+    return newDuration.id;
 });
 exports.postDuration = postDuration;
 const deleteDurationInTestAccount = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield db.query(durationQueries_1.DurationQueries.DeleteUserDuration, [config_1.testUserId]);
+    yield prisma.duration.deleteMany({
+        where: {
+            user_id: config_1.testUserId,
+        },
+    });
 });
 exports.deleteDurationInTestAccount = deleteDurationInTestAccount;

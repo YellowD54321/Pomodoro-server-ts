@@ -6,21 +6,22 @@ import {
 import { Response } from 'express';
 import * as DurationServices from '../services/durationServices';
 import { isValidDate } from '../utils/date/check';
-import { durationTypes } from '../constants';
 import dayjs from 'dayjs';
 import { addDay, addMinite, subtractDay } from '../utils/date/calculate';
 import { getBeginDate } from '../utils/date/set';
 import { testUserId } from '../config';
+import { DURATION_TYPE } from '@prisma/client';
 
 export const getDurationByParams = async (
   req: IGetDurationByParamsReq,
   res: Response,
-): Promise<void> => {
+) => {
   const user = req.body.user;
   const begin_date = req.query.begin_date;
   const end_date = req.query.end_date;
   const durationType = req.query.type;
   const description = req.query.description;
+
   try {
     const durations = await DurationServices.getDurationByParams({
       user_id: user.id,
@@ -29,15 +30,14 @@ export const getDurationByParams = async (
       type: durationType,
       description,
     });
-    res.status(200).json({
+
+    return res.status(200).json({
       durations,
     });
   } catch (err) {
-    console.error(
-      '[duration controller][getDurationByParams][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
-    res.status(500).json({
+    console.error('[duration controller][getDurationByParams][Error] ', err);
+
+    return res.status(500).json({
       message: 'There was an error when fetching duration',
     });
   }
@@ -46,29 +46,23 @@ export const getDurationByParams = async (
 export const getDurationById = async (
   req: IGetDurationByIdReq,
   res: Response,
-): Promise<void> => {
+) => {
   try {
-    const duration = await DurationServices.getDurationById(
-      Number(req.params.id),
-    );
-    res.status(200).json({
+    const duration = await DurationServices.getDurationById(req.params.id);
+
+    return res.status(200).json({
       duration,
     });
   } catch (err) {
-    console.error(
-      '[duration controller][getDurationById][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
-    );
-    res.status(500).json({
+    console.error('[duration controller][getDurationById][Error] ', err);
+
+    return res.status(500).json({
       message: 'There was an error when fetching duration',
     });
   }
 };
 
-export const postDuration = async (
-  req: IPostDurationReq,
-  res: Response,
-): Promise<void> => {
+export const postDuration = async (req: IPostDurationReq, res: Response) => {
   const user = req.body.user;
   const start_time = req.body.start_time;
   const end_time = req.body.end_time;
@@ -78,14 +72,15 @@ export const postDuration = async (
   const description = req.body.description || '';
 
   if (!start_time || !isValidDate(start_time)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'Invalid start_time. start_time must be Date type',
     });
   }
 
-  if (!durationTypes.includes(durationType)) {
-    const types = durationTypes.join(' | ');
-    res.status(400).json({
+  if (!Object.keys(DURATION_TYPE).includes(durationType)) {
+    const types = Object.keys(DURATION_TYPE).join(' | ');
+
+    return res.status(400).json({
       message: `Invalid type. type must be ${types}`,
     });
   }
@@ -97,12 +92,13 @@ export const postDuration = async (
     : 0;
 
   try {
-    let insertId = 0;
+    let insertId;
+
     try {
       insertId = await DurationServices.postDuration({
         user_id: user.id,
-        start_time: dayjs(start_time).format('YYYY-MM-DD HH:mm:ss'),
-        end_time: dayjs(end_time).format('YYYY-MM-DD HH:mm:ss'),
+        start_time: dayjs(start_time).toDate(),
+        end_time: dayjs(end_time).toDate(),
         interrupt_times,
         focus_seconds,
         pause_seconds,
@@ -112,40 +108,36 @@ export const postDuration = async (
     } catch (err) {
       console.error(
         '[duration controller][DurationServices.postDuration][Error] ',
-        typeof err === 'object' ? JSON.stringify(err) : err,
+        err,
       );
-      res.status(500).json({
+
+      return res.status(500).json({
         message: 'Post duration failed.',
       });
-      return;
     }
     const duration = await DurationServices.getDurationById(insertId);
-    res.status(200).json({
+
+    return res.status(200).json({
       duration,
     });
-    return;
   } catch (err) {
     console.error(
       '[duration controller][DurationServices.getDurationById][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
+      err,
     );
-    res.status(500).json({
+
+    return res.status(500).json({
       message: 'Post duration successful, but unable to get the posted data.',
     });
-    return;
   }
 };
 
-export const CreateTestData = async (
-  req: IPostDurationReq,
-  res: Response,
-): Promise<void> => {
+export const CreateTestData = async (req: IPostDurationReq, res: Response) => {
   const user = req.body.user;
   if (user.id !== testUserId) {
-    res.status(401).json({
+    return res.status(401).json({
       message: 'Invalid user.',
     });
-    return;
   }
 
   // Delete old test data first.
@@ -154,12 +146,12 @@ export const CreateTestData = async (
   } catch (err) {
     console.error(
       '[duration controller][DurationServices.deleteDurationInTestAccount][Error] ',
-      typeof err === 'object' ? JSON.stringify(err) : err,
+      err,
     );
-    res.status(500).json({
+
+    return res.status(500).json({
       message: 'Delete duration failed.',
     });
-    return;
   }
 
   const DAYS = 100;
@@ -189,42 +181,43 @@ export const CreateTestData = async (
       const pause_seconds = 0;
       const description =
         DESCRIPTIONS[Math.floor(Math.random() * DESCRIPTIONS.length)];
+
       try {
         await DurationServices.postDuration({
           user_id: user.id,
-          start_time: dayjs(workStartTime).format('YYYY-MM-DD HH:mm:ss'),
-          end_time: dayjs(workEndTime).format('YYYY-MM-DD HH:mm:ss'),
+          start_time: dayjs(workStartTime).toDate(),
+          end_time: dayjs(workEndTime).toDate(),
           interrupt_times,
           focus_seconds,
           pause_seconds,
-          type: 'work',
+          type: 'WORK',
           description,
         });
+
         await DurationServices.postDuration({
           user_id: user.id,
-          start_time: dayjs(restStartTime).format('YYYY-MM-DD HH:mm:ss'),
-          end_time: dayjs(restEndTime).format('YYYY-MM-DD HH:mm:ss'),
+          start_time: dayjs(restStartTime).toDate(),
+          end_time: dayjs(restEndTime).toDate(),
           interrupt_times,
           focus_seconds: 0,
           pause_seconds,
-          type: 'rest',
+          type: 'REST',
           description,
         });
       } catch (err) {
         console.error(
           '[duration controller][CreateTestData DurationServices.postDuration][Error] ',
-          typeof err === 'object' ? JSON.stringify(err) : err,
+          err,
         );
-        res.status(500).json({
+
+        return res.status(500).json({
           message: 'Post duration failed.',
         });
-        return;
       }
     }
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     isSuccess: true,
   });
-  return;
 };

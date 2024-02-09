@@ -18,13 +18,13 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
-app.get("/", (req, res) => {
-    res.send("Express + TypeScript Server");
+app.get('/', (req, res) => {
+    res.send('Express + TypeScript Server');
 });
-app.use("/v1/user", userRoutes_1.default);
+app.use('/v1/user', userRoutes_1.default);
 app.use(auth_1.default);
-app.use("/v1/durations", durationRoutes_1.default);
-app.use("/v1/analysis", analysisRoutes_1.default);
+app.use('/v1/durations', durationRoutes_1.default);
+app.use('/v1/analysis', analysisRoutes_1.default);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });

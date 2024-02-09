@@ -6,15 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const authorize = (req, res, next) => {
-    const bearerToken = req.headers["x-access-token"];
+    const bearerToken = req.headers['x-access-token'];
     if (!bearerToken) {
         return res.status(403).send({
             success: false,
-            message: "Authentication token is required.",
+            message: 'Authentication token is required.',
         });
     }
     try {
-        const token = bearerToken.split(" ")[1];
+        const token = bearerToken.split(' ')[1];
         const decode = jsonwebtoken_1.default.verify(token, config_1.auth.accessSecret);
         req.body.user = decode;
         next();
@@ -22,7 +22,7 @@ const authorize = (req, res, next) => {
     catch (err) {
         return res.status(401).send({
             success: false,
-            message: "Invalid request.",
+            message: 'Invalid request.',
         });
     }
 };

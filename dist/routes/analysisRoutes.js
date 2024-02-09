@@ -29,6 +29,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AnalysisControllers = __importStar(require("../controllers/analysisControllers"));
 const AnalysisRouter = express_1.default.Router();
-AnalysisRouter.route("/day").get(AnalysisControllers.GetAnalysisWithDay);
-AnalysisRouter.route("/month").get(AnalysisControllers.GetAnalysisWithMonth);
+AnalysisRouter.route('/day').get(AnalysisControllers.GetAnalysisWithDay);
+AnalysisRouter.route('/month').get(AnalysisControllers.GetAnalysisWithMonth);
 exports.default = AnalysisRouter;

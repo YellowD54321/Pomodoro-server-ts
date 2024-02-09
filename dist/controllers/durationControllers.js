@@ -38,11 +38,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTestData = exports.postDuration = exports.getDurationById = exports.getDurationByParams = void 0;
 const DurationServices = __importStar(require("../services/durationServices"));
 const check_1 = require("../utils/date/check");
-const constants_1 = require("../constants");
 const dayjs_1 = __importDefault(require("dayjs"));
 const calculate_1 = require("../utils/date/calculate");
 const set_1 = require("../utils/date/set");
 const config_1 = require("../config");
+const client_1 = require("@prisma/client");
 const getDurationByParams = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.body.user;
     const begin_date = req.query.begin_date;
@@ -57,29 +57,29 @@ const getDurationByParams = (req, res) => __awaiter(void 0, void 0, void 0, func
             type: durationType,
             description,
         });
-        res.status(200).json({
+        return res.status(200).json({
             durations,
         });
     }
     catch (err) {
-        console.error("[duration controller][getDurationByParams][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when fetching duration",
+        console.error('[duration controller][getDurationByParams][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when fetching duration',
         });
     }
 });
 exports.getDurationByParams = getDurationByParams;
 const getDurationById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const duration = yield DurationServices.getDurationById(Number(req.params.id));
-        res.status(200).json({
+        const duration = yield DurationServices.getDurationById(req.params.id);
+        return res.status(200).json({
             duration,
         });
     }
     catch (err) {
-        console.error("[duration controller][getDurationById][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when fetching duration",
+        console.error('[duration controller][getDurationById][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when fetching duration',
         });
     }
 });
@@ -91,15 +91,15 @@ const postDuration = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const interrupt_times = req.body.interrupt_times || 0;
     const pause_seconds = req.body.pause_seconds || 0;
     const durationType = req.body.type;
-    const description = req.body.description || "";
+    const description = req.body.description || '';
     if (!start_time || !(0, check_1.isValidDate)(start_time)) {
-        res.status(400).json({
-            message: "Invalid start_time. start_time must be Date type",
+        return res.status(400).json({
+            message: 'Invalid start_time. start_time must be Date type',
         });
     }
-    if (!constants_1.durationTypes.includes(durationType)) {
-        const types = constants_1.durationTypes.join(" | ");
-        res.status(400).json({
+    if (!Object.keys(client_1.DURATION_TYPE).includes(durationType)) {
+        const types = Object.keys(client_1.DURATION_TYPE).join(' | ');
+        return res.status(400).json({
             message: `Invalid type. type must be ${types}`,
         });
     }
@@ -107,12 +107,12 @@ const postDuration = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         ? Math.floor((new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000) - pause_seconds
         : 0;
     try {
-        let insertId = 0;
+        let insertId;
         try {
             insertId = yield DurationServices.postDuration({
                 user_id: user.id,
-                start_time: (0, dayjs_1.default)(start_time).format("YYYY-MM-DD HH:mm:ss"),
-                end_time: (0, dayjs_1.default)(end_time).format("YYYY-MM-DD HH:mm:ss"),
+                start_time: (0, dayjs_1.default)(start_time).toDate(),
+                end_time: (0, dayjs_1.default)(end_time).toDate(),
                 interrupt_times,
                 focus_seconds,
                 pause_seconds,
@@ -121,45 +121,40 @@ const postDuration = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
         }
         catch (err) {
-            console.error("[duration controller][DurationServices.postDuration][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-            res.status(500).json({
-                message: "Post duration failed.",
+            console.error('[duration controller][DurationServices.postDuration][Error] ', err);
+            return res.status(500).json({
+                message: 'Post duration failed.',
             });
-            return;
         }
         const duration = yield DurationServices.getDurationById(insertId);
-        res.status(200).json({
+        return res.status(200).json({
             duration,
         });
-        return;
     }
     catch (err) {
-        console.error("[duration controller][DurationServices.getDurationById][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "Post duration successful, but unable to get the posted data.",
+        console.error('[duration controller][DurationServices.getDurationById][Error] ', err);
+        return res.status(500).json({
+            message: 'Post duration successful, but unable to get the posted data.',
         });
-        return;
     }
 });
 exports.postDuration = postDuration;
 const CreateTestData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.body.user;
     if (user.id !== config_1.testUserId) {
-        res.status(401).json({
-            message: "Invalid user.",
+        return res.status(401).json({
+            message: 'Invalid user.',
         });
-        return;
     }
     // Delete old test data first.
     try {
         yield DurationServices.deleteDurationInTestAccount();
     }
     catch (err) {
-        console.error("[duration controller][DurationServices.deleteDurationInTestAccount][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "Delete duration failed.",
+        console.error('[duration controller][DurationServices.deleteDurationInTestAccount][Error] ', err);
+        return res.status(500).json({
+            message: 'Delete duration failed.',
         });
-        return;
     }
     const DAYS = 100;
     const MIN_NUMBER_IN_ONE_DAY = 4;
@@ -167,7 +162,7 @@ const CreateTestData = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const WORK_MINUTES = 50;
     const REST_MINUTES = 10;
     const ONE_DURATION = WORK_MINUTES + REST_MINUTES;
-    const DESCRIPTIONS = ["work", "study", "side project", "game"];
+    const DESCRIPTIONS = ['work', 'study', 'side project', 'game'];
     const FIRST_DAY = (0, calculate_1.subtractDay)(new Date(), DAYS);
     for (let i = 0; i < DAYS; i++) {
         const TODAY_NUMBER = Math.floor(Math.random() * (MAX_NUMBER_IN_ONE_DAY - MIN_NUMBER_IN_ONE_DAY) +
@@ -186,37 +181,35 @@ const CreateTestData = (req, res) => __awaiter(void 0, void 0, void 0, function*
             try {
                 yield DurationServices.postDuration({
                     user_id: user.id,
-                    start_time: (0, dayjs_1.default)(workStartTime).format("YYYY-MM-DD HH:mm:ss"),
-                    end_time: (0, dayjs_1.default)(workEndTime).format("YYYY-MM-DD HH:mm:ss"),
+                    start_time: (0, dayjs_1.default)(workStartTime).toDate(),
+                    end_time: (0, dayjs_1.default)(workEndTime).toDate(),
                     interrupt_times,
                     focus_seconds,
                     pause_seconds,
-                    type: "work",
+                    type: 'WORK',
                     description,
                 });
                 yield DurationServices.postDuration({
                     user_id: user.id,
-                    start_time: (0, dayjs_1.default)(restStartTime).format("YYYY-MM-DD HH:mm:ss"),
-                    end_time: (0, dayjs_1.default)(restEndTime).format("YYYY-MM-DD HH:mm:ss"),
+                    start_time: (0, dayjs_1.default)(restStartTime).toDate(),
+                    end_time: (0, dayjs_1.default)(restEndTime).toDate(),
                     interrupt_times,
                     focus_seconds: 0,
                     pause_seconds,
-                    type: "rest",
+                    type: 'REST',
                     description,
                 });
             }
             catch (err) {
-                console.error("[duration controller][CreateTestData DurationServices.postDuration][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-                res.status(500).json({
-                    message: "Post duration failed.",
+                console.error('[duration controller][CreateTestData DurationServices.postDuration][Error] ', err);
+                return res.status(500).json({
+                    message: 'Post duration failed.',
                 });
-                return;
             }
         }
     }
-    res.status(200).json({
+    return res.status(200).json({
         isSuccess: true,
     });
-    return;
 });
 exports.CreateTestData = CreateTestData;

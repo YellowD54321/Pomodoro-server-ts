@@ -40,7 +40,7 @@ const promise_1 = __importDefault(require("mysql2/promise"));
 const config = __importStar(require("../config"));
 exports.connection = promise_1.default.createPool(config.db);
 const query = (sql, params) => __awaiter(void 0, void 0, void 0, function* () {
-    const [rows, fields] = yield exports.connection.query(sql, params);
+    const [rows] = yield exports.connection.query(sql, params);
     return rows;
 });
 exports.query = query;

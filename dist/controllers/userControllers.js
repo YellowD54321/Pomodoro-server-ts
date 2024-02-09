@@ -36,23 +36,23 @@ exports.loginTestAccount = exports.loginUserByGoogle = exports.registerUserByGoo
 const UserServices = __importStar(require("../services/userServices"));
 const userHelper_1 = require("../helper/userHelper");
 const authHelper_1 = require("../helper/authHelper");
-// @ts-ignore
+// @ts-expect-error: ignore this for ts
 const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield UserServices.getUserById(Number(req.params.id));
+        const user = yield UserServices.getUserById(req.params.id);
         res.status(200).json({
             user,
         });
     }
     catch (err) {
-        console.error("[user controller][getUserById][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user controller][getUserById][Error] ', err);
         res.status(500).json({
-            message: "There was an error when fetching user",
+            message: 'There was an error when fetching user',
         });
     }
 });
 exports.getUserById = getUserById;
-// @ts-ignore
+// @ts-expect-error: ignore this for ts
 const getUserByGoogleId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield UserServices.getUserByGoogleId(req.params.google_id);
@@ -61,9 +61,9 @@ const getUserByGoogleId = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (err) {
-        console.error("[user controller][getUserByGoogleId][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user controller][getUserByGoogleId][Error] ', err);
         res.status(500).json({
-            message: "There was an error when fetching user",
+            message: 'There was an error when fetching user',
         });
     }
 });
@@ -71,35 +71,31 @@ exports.getUserByGoogleId = getUserByGoogleId;
 const registerUserByGoogle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const accessToken = req.body.access_token;
     if (!accessToken) {
-        res.status(400).json({
-            message: "access_token is required.",
+        return res.status(400).json({
+            message: 'access_token is required.',
         });
-        return;
     }
-    let googleId = "";
+    let googleId = '';
     try {
         googleId = yield (0, userHelper_1.getGoogleId)(accessToken);
     }
     catch (err) {
-        console.error("[user controller][registerUserByGoogle getGoogleId][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when registering user",
+        console.error('[user controller][registerUserByGoogle getGoogleId][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when registering user',
         });
-        return;
     }
     if (!googleId) {
-        res.status(400).json({
-            message: "Invalid access_token.",
+        return res.status(400).json({
+            message: 'Invalid access_token.',
         });
-        return;
     }
     try {
-        const [oldUser] = yield UserServices.getUserByGoogleId(googleId);
+        const oldUser = yield UserServices.getUserByGoogleId(googleId);
         if (oldUser) {
-            res.status(406).json({
-                message: "Google account is already registered.",
+            return res.status(406).json({
+                message: 'Google account is already registered.',
             });
-            return;
         }
         const isSuccess = yield UserServices.registerUserByGoogle(googleId);
         res.status(200).json({
@@ -107,9 +103,9 @@ const registerUserByGoogle = (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (err) {
-        console.error("[user controller][registerUserByGoogle][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user controller][registerUserByGoogle][Error] ', err);
         res.status(500).json({
-            message: "There was an error when registering user",
+            message: 'There was an error when registering user',
         });
     }
 });
@@ -118,28 +114,26 @@ const loginUserByGoogle = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const accessToken = req.body.access_token;
     if (!accessToken) {
         return res.status(400).json({
-            message: "access_token is required.",
+            message: 'access_token is required.',
         });
     }
-    let googleId = "";
+    let googleId = '';
     try {
         googleId = yield (0, userHelper_1.getGoogleId)(accessToken);
     }
     catch (err) {
-        console.error("[user controller][loginUserByGoogle getGoogleId][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
-        res.status(500).json({
-            message: "There was an error when signing in user",
+        console.error('[user controller][loginUserByGoogle getGoogleId][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when signing in user',
         });
-        return;
     }
     if (!googleId) {
-        res.status(400).json({
-            message: "Invalid access_token.",
+        return res.status(400).json({
+            message: 'Invalid access_token.',
         });
-        return;
     }
     try {
-        const [user] = yield UserServices.getUserByGoogleId(googleId);
+        const user = yield UserServices.getUserByGoogleId(googleId);
         if (!user) {
             return res.status(406).json({
                 message: "user didn't register with this google account",
@@ -152,16 +146,16 @@ const loginUserByGoogle = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (err) {
-        console.error("[user controller][loginUserByGoogle][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user controller][loginUserByGoogle][Error] ', err);
         res.status(500).json({
-            message: "There was an error when signing in user",
+            message: 'There was an error when signing in user',
         });
     }
 });
 exports.loginUserByGoogle = loginUserByGoogle;
 const loginTestAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const [user] = yield UserServices.getTestAccountUser();
+        const user = yield UserServices.getTestAccountUser();
         if (user) {
             const token = (0, authHelper_1.createAuthToken)(user.id);
             return res.status(200).json({
@@ -174,17 +168,22 @@ const loginTestAccount = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 const isSuccess = yield UserServices.registerTestAccount();
                 if (!isSuccess) {
                     return res.status(500).json({
-                        message: "Register test account fail.",
+                        message: 'Register test account fail.',
                     });
                 }
             }
             catch (err) {
-                console.error("[user controller][loginTestAccount][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+                console.error('[user controller][loginTestAccount][Error] ', err);
                 return res.status(500).json({
-                    message: "Register test account fail.",
+                    message: 'Register test account fail.',
                 });
             }
-            const [user] = yield UserServices.getTestAccountUser();
+            const user = yield UserServices.getTestAccountUser();
+            if (!user) {
+                return res.status(500).json({
+                    message: 'test account not found',
+                });
+            }
             const token = (0, authHelper_1.createAuthToken)(user.id);
             return res.status(200).json({
                 access_token: token.access_token,
@@ -193,9 +192,9 @@ const loginTestAccount = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (err) {
-        console.error("[user controller][loginTestAccount][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user controller][loginTestAccount][Error] ', err);
         return res.status(500).json({
-            message: "Login test account fail.",
+            message: 'Login test account fail.',
         });
     }
 });

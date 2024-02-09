@@ -7,21 +7,21 @@ exports.subtractMinite = exports.addMinite = exports.calculateMinue = exports.su
 const dayjs_1 = __importDefault(require("dayjs"));
 const check_1 = require("./check");
 const METHOD = {
-    ADD: "add",
-    SUB: "subtract",
+    ADD: 'add',
+    SUB: 'subtract',
 };
 const UNIT = {
-    SECOND: "second",
-    MINUTE: "minute",
-    HOUR: "hour",
-    DAY: "day",
-    WEEK: "week",
-    MONTH: "month",
-    YEAR: "year",
+    SECOND: 'second',
+    MINUTE: 'minute',
+    HOUR: 'hour',
+    DAY: 'day',
+    WEEK: 'week',
+    MONTH: 'month',
+    YEAR: 'year',
 };
 const checkIsValidDate = (date) => {
     if (!(0, check_1.isValidDate)(date)) {
-        throw new Error("date must be Date type or string which can be transformed to valid date.");
+        throw new Error('date must be Date type or string which can be transformed to valid date.');
     }
 };
 const calculateDate = (date, number, method, unit) => {
@@ -37,13 +37,13 @@ const calculateDate = (date, number, method, unit) => {
             break;
     }
     if (!time || !(0, check_1.isValidDate)(time.toString())) {
-        throw new Error("calculateDate return invalid date.");
+        throw new Error('calculateDate return invalid date.');
     }
     return new Date(time.toString());
 };
 exports.calculateDate = calculateDate;
 const calculateDay = (date, number, method) => {
-    return (0, exports.calculateDate)(date, number, method, "day");
+    return (0, exports.calculateDate)(date, number, method, 'day');
 };
 exports.calculateDay = calculateDay;
 const addDay = (date, number) => {
@@ -57,7 +57,7 @@ const subtractDay = (date, number) => {
 };
 exports.subtractDay = subtractDay;
 const calculateMinue = (date, number, method) => {
-    return (0, exports.calculateDate)(date, number, method, "minute");
+    return (0, exports.calculateDate)(date, number, method, 'minute');
 };
 exports.calculateMinue = calculateMinue;
 const addMinite = (date, number) => {

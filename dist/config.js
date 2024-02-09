@@ -7,10 +7,10 @@ exports.testUserId = exports.auth = exports.db = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.db = {
-    host: "localhost",
+    host: 'localhost',
     user: process.env.MYSQL_USER_NAME,
     password: process.env.MYSQL_PASSWORD,
-    database: "pomodoro",
+    database: 'pomodoro',
     port: 3306,
     waitForConnections: true,
     connectionLimit: 10,
@@ -21,7 +21,7 @@ exports.db = {
     keepAliveInitialDelay: 0,
 };
 exports.auth = {
-    accessSecret: "75s8n#nX5moO",
-    refreshSecret: "9Ue!td8U8uw0",
+    accessSecret: '75s8n#nX5moO',
+    refreshSecret: '9Ue!td8U8uw0',
 };
-exports.testUserId = 54321;
+exports.testUserId = '54321';

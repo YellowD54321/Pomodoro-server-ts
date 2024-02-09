@@ -22,4 +22,4 @@ export const auth = {
   refreshSecret: '9Ue!td8U8uw0',
 };
 
-export const testUserId = 54321;
+export const testUserId = '54321';

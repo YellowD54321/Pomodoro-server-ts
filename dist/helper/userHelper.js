@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGoogleId = void 0;
 const axios_1 = __importDefault(require("axios"));
 const getGoogleId = (accessToken) => __awaiter(void 0, void 0, void 0, function* () {
-    const url = "https://www.googleapis.com/oauth2/v2/userinfo";
+    const url = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -26,7 +26,7 @@ const getGoogleId = (accessToken) => __awaiter(void 0, void 0, void 0, function*
         return res.data.id;
     }
     catch (err) {
-        console.error("[user helper][getGoogleId][Error] ", typeof err === "object" ? JSON.stringify(err) : err);
+        console.error('[user helper][getGoogleId][Error] ', typeof err === 'object' ? JSON.stringify(err) : err);
         throw err;
     }
 });

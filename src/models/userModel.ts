@@ -1,11 +1,10 @@
 import { Request } from 'express';
 
 export interface IUser {
-  id: number;
-  google_id?: string;
+  id: string;
+  google_id: string | null;
 }
 
-export interface IGetUserReq extends Request<{ id: IUser['id'] }> {}
-export interface IGetUserByGoogleIdReq
-  extends Request<{ google_id: IUser['google_id'] }> {}
+export interface IGetUserReq extends Request<{ id: string }> {}
+export interface IGetUserByGoogleIdReq extends Request<{ google_id: string }> {}
 export interface IRegisterUserByGoogleReq extends Request {}

@@ -1,32 +1,57 @@
 import { testUserId } from '../config';
 import { IUser } from '../models/userModel';
-import { UserQueries } from '../queries/userQueries';
-import * as db from './db';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const getUserById = async (userId: IUser['id']) => {
-  return db.query<IUser>(UserQueries.GetUserById, [userId]);
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  return user;
 };
 
-export const getUserByGoogleId = async (googleId: IUser['google_id']) => {
-  return await db.query<IUser[]>(UserQueries.GetUserByGoogleId, [googleId]);
+export const getUserByGoogleId = async (
+  googleId: string,
+): Promise<IUser | null> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      google_id: googleId,
+    },
+  });
+
+  return user;
 };
 
-export const registerUserByGoogle = async (googleId: IUser['google_id']) => {
-  const result = await db.query<{ affectedRows: number }>(
-    UserQueries.RegisterUserByGoogleId,
-    [googleId],
-  );
-  return result.affectedRows > 0;
+export const registerUserByGoogle = async (googleId: string) => {
+  const newUser = await prisma.user.create({
+    data: {
+      google_id: googleId,
+    },
+  });
+
+  return newUser;
 };
 
 export const getTestAccountUser = async () => {
-  return db.query<IUser[]>(UserQueries.GetUserById, [testUserId]);
+  const user = await prisma.user.findUnique({
+    where: {
+      id: testUserId,
+    },
+  });
+
+  return user;
 };
 
 export const registerTestAccount = async () => {
-  const result = await db.query<{ affectedRows: number }>(
-    UserQueries.RegisterTestAccount,
-    [testUserId],
-  );
-  return result.affectedRows > 0;
+  const newUser = await prisma.user.create({
+    data: {
+      id: testUserId,
+    },
+  });
+
+  return newUser;
 };

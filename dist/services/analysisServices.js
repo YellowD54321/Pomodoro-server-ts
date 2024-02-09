@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -33,35 +10,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetAnalysisWithMonth = exports.GetAnalysisWithDay = void 0;
-const analysisQueries_1 = require("../queries/analysisQueries");
-const db = __importStar(require("./db"));
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 const GetAnalysisWithDay = ({ user_id, begin_date, end_date, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const analysises = yield db.query(analysisQueries_1.AnalysisQueries.GetAnalysisWithDay, [
-        user_id,
-        begin_date,
-        begin_date,
-        end_date,
-        end_date,
-        type,
-        type,
-        description,
-        description,
-    ]);
-    return analysises;
+    const analysises = yield prisma.$queryRaw `
+        SELECT
+          DATE_FORMAT(start_time, '%Y-%m-%d') AS label, 
+          COUNT(*) AS amount, 
+          SUM(TIMESTAMPDIFF(MINUTE,start_time,end_time)) AS minute
+        FROM duration 
+        WHERE
+          user_id = ${user_id}
+          AND start_time >= IF(${begin_date} IS NOT NULL, ${begin_date}, '1000-01-01')
+          AND end_time <= IF(${end_date} IS NOT NULL, ${end_date}, '3000-12-31')
+          AND (${type} IS NULL OR type = ${type})
+          AND (${description} IS NULL OR description LIKE CONCAT('%', ${description}, '%'))
+        GROUP BY label
+        ORDER BY label ASC;
+  `;
+    return analysises.map((analysis) => ({
+        label: analysis.label,
+        amount: Number(analysis.amount),
+        minute: analysis.minute,
+    }));
 });
 exports.GetAnalysisWithDay = GetAnalysisWithDay;
 const GetAnalysisWithMonth = ({ user_id, begin_date, end_date, type, description, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const analysises = yield db.query(analysisQueries_1.AnalysisQueries.GetAnalysisWithMonth, [
-        user_id,
-        begin_date,
-        begin_date,
-        end_date,
-        end_date,
-        type,
-        type,
-        description,
-        description,
-    ]);
-    return analysises;
+    const analysises = yield prisma.$queryRaw `
+        SELECT 
+          DATE_FORMAT(start_time, '%Y-%m') AS label, 
+          COUNT(*) AS amount, 
+          SUM(TIMESTAMPDIFF(MINUTE,start_time,end_time)) AS minute
+        FROM duration
+        WHERE
+          user_id = ${user_id}
+          AND start_time >= IF(${begin_date} IS NOT NULL, ${begin_date}, '1000-01-01')
+          AND end_time <= IF(${end_date} IS NOT NULL, ${end_date}, '3000-12-31')
+          AND (${type} IS NULL OR type = ${type})
+          AND (${description} IS NULL OR description LIKE CONCAT('%', ${description}, '%'))
+        GROUP BY label
+        ORDER BY label ASC;
+  `;
+    return analysises.map((analysis) => ({
+        label: analysis.label,
+        amount: Number(analysis.amount),
+        minute: analysis.minute,
+    }));
 });
 exports.GetAnalysisWithMonth = GetAnalysisWithMonth;
