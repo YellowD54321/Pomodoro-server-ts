@@ -48,7 +48,6 @@ const GetAnalysisWithDay = (req, res) => __awaiter(void 0, void 0, void 0, funct
             type: durationType,
             description,
         });
-        console.log('#### analysises', analysises);
         return res.status(200).json({
             analysises,
         });
@@ -75,7 +74,6 @@ const GetAnalysisWithMonth = (req, res) => __awaiter(void 0, void 0, void 0, fun
             type: durationType,
             description,
         });
-        console.log('#### analysises', analysises);
         return res.status(200).json({
             analysises,
         });

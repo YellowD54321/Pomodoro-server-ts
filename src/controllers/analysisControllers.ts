@@ -21,8 +21,6 @@ export const GetAnalysisWithDay = async (
       description,
     });
 
-    console.log('#### analysises', analysises);
-
     return res.status(200).json({
       analysises,
     });
@@ -53,8 +51,6 @@ export const GetAnalysisWithMonth = async (
       type: durationType,
       description,
     });
-
-    console.log('#### analysises', analysises);
 
     return res.status(200).json({
       analysises,
