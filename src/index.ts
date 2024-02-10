@@ -5,7 +5,7 @@ import cors from 'cors';
 import authorize from './middlewares/auth';
 import DurationRouter from './routes/durationRoutes';
 import AnalysisRouter from './routes/analysisRoutes';
-import PostRouter from './routes/postRoutes';
+import { PostsRouter, PostRouter } from './routes/postRoutes';
 
 dotenv.config();
 
@@ -24,12 +24,13 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/v1/user', UserRouter);
-app.use('/v1/posts', PostRouter);
+app.use('/v1/posts', PostsRouter);
 
 app.use(authorize);
 
 app.use('/v1/durations', DurationRouter);
 app.use('/v1/analysis', AnalysisRouter);
+app.use('/v1/post', PostRouter);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

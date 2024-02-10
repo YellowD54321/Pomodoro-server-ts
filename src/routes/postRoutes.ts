@@ -1,8 +1,12 @@
 import express from 'express';
 import * as PostControllers from '../controllers/postControllers';
 
+const PostsRouter = express.Router();
+
+PostsRouter.route('').get(PostControllers.getPosts);
+
 const PostRouter = express.Router();
 
-PostRouter.route('').get(PostControllers.getPosts);
+PostRouter.route('/like/:post_id').post(PostControllers.likePost);
 
-export default PostRouter;
+export { PostsRouter, PostRouter };

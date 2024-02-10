@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPosts = void 0;
+exports.likePost = exports.getPosts = void 0;
 const PostServices = __importStar(require("../services/postServices"));
 const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.body.user;
@@ -55,3 +55,31 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getPosts = getPosts;
+const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const post_id = req.params.post_id;
+    const user = req.body.user;
+    const emoji = req.body.emoji;
+    if (!user) {
+        return res.status(406).json({
+            success: false,
+            message: 'Invalid request.',
+        });
+    }
+    try {
+        yield PostServices.likePost({
+            post_id,
+            user_id: user.id,
+            emoji,
+        });
+        return res.status(200).json({
+            message: 'like post successfully',
+        });
+    }
+    catch (err) {
+        console.error('[post controller][likePost][Error] ', err);
+        return res.status(500).json({
+            message: 'There was an error when like post',
+        });
+    }
+});
+exports.likePost = likePost;

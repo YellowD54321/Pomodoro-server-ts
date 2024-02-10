@@ -9,6 +9,7 @@ export interface IPostInteraction {
 }
 
 export interface IPost {
+  id: string;
   durationId: string;
   user_id: string;
   start_time: Date;
@@ -34,4 +35,20 @@ export interface IGetPostsByParamReq
       user: IUser;
     },
     IGetPostsByParam
+  > {}
+
+export interface ILikePostByParam {
+  post_id: string;
+  user_id: string;
+  emoji: INTERACTION_EMOJI | null;
+}
+
+export interface ILikePostByParamReq
+  extends Request<
+    { post_id: string },
+    Record<string, never>,
+    {
+      user: IUser;
+      emoji: INTERACTION_EMOJI | null;
+    }
   > {}

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { IGetPostsByParam, IPost } from '../models/postModel';
+import { IGetPostsByParam, ILikePostByParam, IPost } from '../models/postModel';
 import { POSTS_ONE_PAGE_COUNT } from '../constants';
 
 const prisma = new PrismaClient();
@@ -22,11 +22,30 @@ export const getPosts = async ({
     orderBy: {
       end_time: 'desc',
     },
+    select: {
+      id: true,
+      user_id: true,
+      start_time: true,
+      end_time: true,
+      interrupt_times: true,
+      focus_seconds: true,
+      pause_seconds: true,
+      type: true,
+      description: true,
+      PostInteraction: {
+        where: {
+          emoji: {
+            not: null,
+          },
+        },
+      },
+    },
     take: POSTS_ONE_PAGE_COUNT,
     skip: (page - 1) * POSTS_ONE_PAGE_COUNT,
   });
 
   const posts = durations.map((duration) => ({
+    id: duration.id,
     durationId: duration.id,
     user_id: duration.user_id,
     start_time: duration.start_time,
@@ -36,7 +55,43 @@ export const getPosts = async ({
     pause_seconds: duration.pause_seconds,
     type: duration.type,
     description: duration.description,
+    interactions: duration.PostInteraction.map((interaction) => ({
+      user_id: interaction.user_id,
+      post_id: interaction.post_id,
+      emoji: interaction.emoji,
+    })),
   })) as IPost[];
 
   return posts;
+};
+
+export const likePost = async ({
+  post_id,
+  user_id,
+  emoji,
+}: ILikePostByParam) => {
+  await prisma.postInteraction.upsert({
+    where: {
+      post_id_user_id: {
+        user_id,
+        post_id,
+      },
+    },
+    create: {
+      user: {
+        connect: {
+          id: user_id,
+        },
+      },
+      post: {
+        connect: {
+          id: post_id,
+        },
+      },
+      emoji,
+    },
+    update: {
+      emoji,
+    },
+  });
 };

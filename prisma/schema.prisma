@@ -40,6 +40,8 @@ model PostInteraction {
   emoji     INTERACTION_EMOJI?
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
+
+  @@unique([post_id, user_id], name: "post_id_user_id")
 }
 
 enum DURATION_TYPE {
