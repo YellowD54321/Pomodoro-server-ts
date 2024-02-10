@@ -11,26 +11,45 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  google_id String?    @unique
-  Duration  Duration[]
+  id              String            @id @default(uuid())
+  google_id       String?           @unique
+  Duration        Duration[]
+  PostInteraction PostInteraction[]
 }
 
 model Duration {
-  id              String        @id @default(uuid())
-  user            User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id              String            @id @default(uuid())
+  user            User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id         String
   start_time      DateTime
   end_time        DateTime?
-  interrupt_times Int           @default(0)
-  focus_seconds   Int           @default(0)
-  pause_seconds   Int           @default(0)
+  interrupt_times Int               @default(0)
+  focus_seconds   Int               @default(0)
+  pause_seconds   Int               @default(0)
   type            DURATION_TYPE
   description     String?
+  PostInteraction PostInteraction[]
+}
+
+model PostInteraction {
+  id        String             @id @default(uuid())
+  post_id   String
+  post      Duration           @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user_id   String
+  user      User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  emoji     INTERACTION_EMOJI?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 }
 
 enum DURATION_TYPE {
   WORK
   REST
   PAUSE
+}
+
+enum INTERACTION_EMOJI {
+  LIKE
+  WOW
+  HEART
 }

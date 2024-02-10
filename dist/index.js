@@ -10,6 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const auth_1 = __importDefault(require("./middlewares/auth"));
 const durationRoutes_1 = __importDefault(require("./routes/durationRoutes"));
 const analysisRoutes_1 = __importDefault(require("./routes/analysisRoutes"));
+const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
     res.send('Express + TypeScript Server');
 });
 app.use('/v1/user', userRoutes_1.default);
+app.use('/v1/posts', postRoutes_1.default);
 app.use(auth_1.default);
 app.use('/v1/durations', durationRoutes_1.default);
 app.use('/v1/analysis', analysisRoutes_1.default);

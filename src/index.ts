@@ -5,6 +5,7 @@ import cors from 'cors';
 import authorize from './middlewares/auth';
 import DurationRouter from './routes/durationRoutes';
 import AnalysisRouter from './routes/analysisRoutes';
+import PostRouter from './routes/postRoutes';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/v1/user', UserRouter);
+app.use('/v1/posts', PostRouter);
 
 app.use(authorize);
 
