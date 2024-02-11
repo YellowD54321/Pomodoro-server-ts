@@ -11,6 +11,7 @@ export interface IPostInteraction {
 export interface IPost {
   id: string;
   durationId: string;
+  user: IUser;
   user_id: string;
   start_time: Date;
   end_time: Date;
@@ -36,6 +37,10 @@ export interface IGetPostsByParamReq
     },
     IGetPostsByParam
   > {}
+
+export interface IGetPostById {
+  post_id: string;
+}
 
 export interface ILikePostByParam {
   post_id: string;

@@ -6,6 +6,7 @@ import authorize from './middlewares/auth';
 import DurationRouter from './routes/durationRoutes';
 import AnalysisRouter from './routes/analysisRoutes';
 import { PostsRouter, PostRouter } from './routes/postRoutes';
+import { WebSocketServer } from 'ws';
 
 dotenv.config();
 
@@ -32,6 +33,23 @@ app.use('/v1/durations', DurationRouter);
 app.use('/v1/analysis', AnalysisRouter);
 app.use('/v1/post', PostRouter);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+
+  ws.send('123');
+
+  ws.on('message', (data) => {
+    const text = data.toString();
+    console.log('#### text', text);
+  });
+
+  ws.on('close', () => {
+    console.log('Connection closed');
+  });
 });

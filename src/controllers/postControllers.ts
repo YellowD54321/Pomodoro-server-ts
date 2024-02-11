@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { IGetPostsByParamReq, ILikePostByParamReq } from '../models/postModel';
 import * as PostServices from '../services/postServices';
+import * as NotificationServices from '../services/notificationServices';
 
 export const getPosts = async (req: IGetPostsByParamReq, res: Response) => {
   const user = req.body.user;
@@ -38,11 +39,28 @@ export const likePost = async (req: ILikePostByParamReq, res: Response) => {
   }
 
   try {
+    const post = await PostServices.getPostById({ post_id });
+
+    if (!post) {
+      return res.status(401).json({
+        message: 'Post not found',
+      });
+    }
+
     await PostServices.likePost({
       post_id,
       user_id: user.id,
       emoji,
     });
+
+    if (emoji) {
+      await NotificationServices.createNotification({
+        receiver_id: post.user.id,
+        sender_id: user.id,
+        post_id,
+        content: '',
+      });
+    }
 
     return res.status(200).json({
       message: 'like post successfully',

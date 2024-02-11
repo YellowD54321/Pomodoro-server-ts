@@ -34,6 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.likePost = exports.getPosts = void 0;
 const PostServices = __importStar(require("../services/postServices"));
+const NotificationServices = __importStar(require("../services/notificationServices"));
 const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.body.user;
     const page = req.query.page;
@@ -66,11 +67,25 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     try {
+        const post = yield PostServices.getPostById({ post_id });
+        if (!post) {
+            return res.status(401).json({
+                message: 'Post not found',
+            });
+        }
         yield PostServices.likePost({
             post_id,
             user_id: user.id,
             emoji,
         });
+        if (emoji) {
+            yield NotificationServices.createNotification({
+                receiver_id: post.user.id,
+                sender_id: user.id,
+                post_id,
+                content: '',
+            });
+        }
         return res.status(200).json({
             message: 'like post successfully',
         });

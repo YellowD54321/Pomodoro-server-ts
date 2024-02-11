@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likePost = exports.getPosts = void 0;
+exports.likePost = exports.getPostById = exports.getPosts = void 0;
 const client_1 = require("@prisma/client");
 const constants_1 = require("../constants");
 const prisma = new client_1.PrismaClient();
@@ -66,6 +66,35 @@ const getPosts = ({ user_id, page = 1, }) => __awaiter(void 0, void 0, void 0, f
     return posts;
 });
 exports.getPosts = getPosts;
+const getPostById = ({ post_id, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const duration = yield prisma.duration.findUnique({
+        where: {
+            id: post_id,
+            end_time: {
+                not: null,
+            },
+        },
+        select: {
+            id: true,
+            user: true,
+            user_id: true,
+            start_time: true,
+            end_time: true,
+            interrupt_times: true,
+            focus_seconds: true,
+            pause_seconds: true,
+            type: true,
+            description: true,
+            PostInteraction: true,
+            Notification: true,
+        },
+    });
+    if (!duration)
+        return null;
+    const post = Object.assign(Object.assign({}, duration), { durationId: duration.id, interactions: duration.PostInteraction });
+    return post;
+});
+exports.getPostById = getPostById;
 const likePost = ({ post_id, user_id, emoji, }) => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma.postInteraction.upsert({
         where: {

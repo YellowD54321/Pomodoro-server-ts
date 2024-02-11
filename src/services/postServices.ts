@@ -1,5 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import { IGetPostsByParam, ILikePostByParam, IPost } from '../models/postModel';
+import {
+  IGetPostById,
+  IGetPostsByParam,
+  ILikePostByParam,
+  IPost,
+} from '../models/postModel';
 import { POSTS_ONE_PAGE_COUNT } from '../constants';
 
 const prisma = new PrismaClient();
@@ -63,6 +68,43 @@ export const getPosts = async ({
   })) as IPost[];
 
   return posts;
+};
+
+export const getPostById = async ({
+  post_id,
+}: IGetPostById): Promise<IPost | null> => {
+  const duration = await prisma.duration.findUnique({
+    where: {
+      id: post_id,
+      end_time: {
+        not: null,
+      },
+    },
+    select: {
+      id: true,
+      user: true,
+      user_id: true,
+      start_time: true,
+      end_time: true,
+      interrupt_times: true,
+      focus_seconds: true,
+      pause_seconds: true,
+      type: true,
+      description: true,
+      PostInteraction: true,
+      Notification: true,
+    },
+  });
+
+  if (!duration) return null;
+
+  const post = {
+    ...duration,
+    durationId: duration.id,
+    interactions: duration.PostInteraction,
+  } as IPost;
+
+  return post;
 };
 
 export const likePost = async ({

@@ -11,10 +11,13 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  google_id       String?           @unique
-  Duration        Duration[]
-  PostInteraction PostInteraction[]
+  id                   String            @id @default(uuid())
+  google_id            String?           @unique
+  Duration             Duration[]
+  PostInteraction      PostInteraction[]
+  NotificationReceiver Notification[]    @relation(name: "Receiver")
+  NotificationSender   Notification[]    @relation(name: "Sender")
+  Notification         Notification[]
 }
 
 model Duration {
@@ -29,6 +32,7 @@ model Duration {
   type            DURATION_TYPE
   description     String?
   PostInteraction PostInteraction[]
+  Notification    Notification[]
 }
 
 model PostInteraction {
@@ -42,6 +46,22 @@ model PostInteraction {
   updatedAt DateTime           @updatedAt
 
   @@unique([post_id, user_id], name: "post_id_user_id")
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  receiver    User      @relation(name: "Receiver", fields: [receiver_id], references: [id])
+  receiver_id String
+  sender      User      @relation(name: "Sender", fields: [sender_id], references: [id])
+  sender_id   String
+  post        Duration? @relation(fields: [post_id], references: [id])
+  post_id     String?
+  content     String
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  User        User?     @relation(fields: [userId], references: [id])
+  userId      String?
 }
 
 enum DURATION_TYPE {
