@@ -17,6 +17,8 @@ const getPosts = ({ user_id, page = 1, }) => __awaiter(void 0, void 0, void 0, f
     const durations = yield prisma.duration.findMany({
         where: Object.assign({ end_time: {
                 not: null,
+            }, focus_seconds: {
+                gte: constants_1.VALID_POST_WORK_SECONDS,
             } }, (user_id && {
             user_id: {
                 not: user_id,

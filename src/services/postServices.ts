@@ -5,7 +5,7 @@ import {
   ILikePostByParam,
   IPost,
 } from '../models/postModel';
-import { POSTS_ONE_PAGE_COUNT } from '../constants';
+import { POSTS_ONE_PAGE_COUNT, VALID_POST_WORK_SECONDS } from '../constants';
 
 const prisma = new PrismaClient();
 
@@ -17,6 +17,9 @@ export const getPosts = async ({
     where: {
       end_time: {
         not: null,
+      },
+      focus_seconds: {
+        gte: VALID_POST_WORK_SECONDS,
       },
       ...(user_id && {
         user_id: {
