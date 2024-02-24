@@ -3,8 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUerFromToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
+const getUerFromToken = (token) => {
+    return jsonwebtoken_1.default.verify(token, config_1.auth.accessSecret);
+};
+exports.getUerFromToken = getUerFromToken;
 const authorize = (req, res, next) => {
     const bearerToken = req.headers['x-access-token'];
     if (!bearerToken) {
@@ -15,7 +20,7 @@ const authorize = (req, res, next) => {
     }
     try {
         const token = bearerToken.split(' ')[1];
-        const decode = jsonwebtoken_1.default.verify(token, config_1.auth.accessSecret);
+        const decode = (0, exports.getUerFromToken)(token);
         req.body.user = decode;
         next();
     }
