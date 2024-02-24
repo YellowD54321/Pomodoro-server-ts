@@ -1,0 +1,11 @@
+import express from 'express';
+import * as NotificationControllers from '../controllers/notificationControllers';
+
+const NotificationRouter = express.Router();
+
+NotificationRouter.route('').get(NotificationControllers.readNotifications);
+NotificationRouter.route('readNotifications').post(
+  NotificationControllers.readNotifications,
+);
+
+export default NotificationRouter;

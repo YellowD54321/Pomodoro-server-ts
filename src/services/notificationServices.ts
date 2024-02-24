@@ -3,18 +3,23 @@ import {
   ICreateNotificationByParam,
   IGetNotificationByParam,
   INotification,
+  IReadNotificationsByParam,
 } from '../models/notificationModel';
 
 const prisma = new PrismaClient();
 
 export const getNotifications = async ({
   user_id,
+  isRead,
 }: IGetNotificationByParam): Promise<INotification[]> => {
   const notifications = await prisma.notification.findMany({
     where: {
       receiver: {
         id: user_id,
       },
+      ...(isRead !== undefined && {
+        isRead,
+      }),
     },
     select: {
       id: true,
@@ -61,6 +66,19 @@ export const createNotification = async ({
       }),
       content,
       isRead: false,
+    },
+  });
+};
+
+export const readNotifications = async ({ ids }: IReadNotificationsByParam) => {
+  await prisma.notification.updateMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+    data: {
+      isRead: true,
     },
   });
 };

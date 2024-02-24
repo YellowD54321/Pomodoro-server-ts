@@ -17,6 +17,7 @@ export interface INotification {
 
 export interface IGetNotificationByParam {
   user_id: string;
+  isRead?: boolean;
 }
 
 export interface IGetNotificationsByParamReq
@@ -35,3 +36,16 @@ export interface ICreateNotificationByParam {
   post_id?: string;
   content: string;
 }
+
+export interface IReadNotificationsByParam {
+  ids: string[];
+}
+
+export interface IReadNotificationsByParamReq
+  extends Request<
+    Record<string, never>,
+    Record<string, never>,
+    {
+      ids: string[];
+    }
+  > {}

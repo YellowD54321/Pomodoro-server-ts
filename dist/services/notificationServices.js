@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNotification = exports.getNotifications = void 0;
+exports.readNotifications = exports.createNotification = exports.getNotifications = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const getNotifications = ({ user_id, }) => __awaiter(void 0, void 0, void 0, function* () {
+const getNotifications = ({ user_id, isRead, }) => __awaiter(void 0, void 0, void 0, function* () {
     const notifications = yield prisma.notification.findMany({
-        where: {
-            receiver: {
+        where: Object.assign({ receiver: {
                 id: user_id,
-            },
-        },
+            } }, (isRead !== undefined && {
+            isRead,
+        })),
         select: {
             id: true,
             receiver: true,
@@ -56,3 +56,16 @@ const createNotification = ({ receiver_id, sender_id, post_id, content, }) => __
     });
 });
 exports.createNotification = createNotification;
+const readNotifications = ({ ids }) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma.notification.updateMany({
+        where: {
+            id: {
+                in: ids,
+            },
+        },
+        data: {
+            isRead: true,
+        },
+    });
+});
+exports.readNotifications = readNotifications;
