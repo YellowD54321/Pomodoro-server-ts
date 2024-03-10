@@ -15,7 +15,7 @@ export const GetAnalysisWithDay = async ({
           DATE_FORMAT(start_time, '%Y-%m-%d') AS label, 
           COUNT(*) AS amount, 
           SUM(TIMESTAMPDIFF(MINUTE,start_time,end_time)) AS minute
-        FROM duration 
+        FROM Duration 
         WHERE
           user_id = ${user_id}
           AND start_time >= IF(${begin_date} IS NOT NULL, ${begin_date}, '1000-01-01')
@@ -45,7 +45,7 @@ export const GetAnalysisWithMonth = async ({
           DATE_FORMAT(start_time, '%Y-%m') AS label, 
           COUNT(*) AS amount, 
           SUM(TIMESTAMPDIFF(MINUTE,start_time,end_time)) AS minute
-        FROM duration
+        FROM Duration
         WHERE
           user_id = ${user_id}
           AND start_time >= IF(${begin_date} IS NOT NULL, ${begin_date}, '1000-01-01')
